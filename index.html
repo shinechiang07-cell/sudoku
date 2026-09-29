@@ -53,7 +53,7 @@ body{
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
 button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 
-.app{height:100%;max-width:1600px;margin:0 auto;padding-block:12px;display:flex;flex-direction:column;gap:12px}
+.app{min-height:100%;max-width:1600px;margin:0 auto;padding-block:12px;display:flex;flex-direction:column;gap:12px}
 
 /* ---------- header ---------- */
 .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -72,10 +72,10 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 .levels button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 
 /* ---------- stage ---------- */
-.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:clamp(18px,3vw,56px)}
+.stage{flex:1 0 auto;display:flex;align-items:safe center;justify-content:center;gap:clamp(18px,3vw,56px)}
 .map{
-  --size:min(calc(100vh - 140px),58vw);
-  --size:min(calc(100dvh - 140px),58vw);
+  --size:min(calc(100vh - var(--head,70px) - 80px),58vw);
+  --size:min(calc(100dvh - var(--head,70px) - 80px),58vw);
   position:relative;flex:none;width:calc(var(--size) + 28px);height:calc(var(--size) + 28px);padding:8px;
   background:linear-gradient(135deg,var(--wood2),var(--wood));border:5px solid var(--ink);border-radius:20px;box-shadow:10px 10px 0 var(--ink);
 }
@@ -200,6 +200,16 @@ button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 .toast.show{transform:translate(-50%,0);opacity:1}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:11}
 
+/* 矮螢幕（白板瀏覽器有工具列時）：操作區縮小，確保不會超出畫面蓋到上方按鈕 */
+@media (max-height:820px) and (min-aspect-ratio:1/1){
+  .panel{gap:8px}
+  .log{padding:8px 14px}
+  #time{font-size:clamp(28px,3.4vw,44px)}
+  .pad{gap:8px}
+  .pad button{height:clamp(44px,8vh,78px);font-size:clamp(24px,4.2vh,44px)}
+  .tools button,.foot button{padding:6px 4px}
+  .rule{font-size:12px;line-height:1.4}
+}
 /* 直式 / 手機 */
 @media (max-aspect-ratio:1/1){
   html,body{height:auto}
@@ -682,6 +692,11 @@ document.addEventListener('keydown',e=>{
     if(i>=0 && i<n*n) select(i);
   }
 });
+
+/* ---------- 標題列高度：換行時棋盤自動縮小，避免擠壓 ---------- */
+const topBar=document.querySelector(".top");
+function syncHead(){ document.documentElement.style.setProperty("--head", topBar.offsetHeight+"px"); }
+syncHead(); if(window.ResizeObserver) new ResizeObserver(syncHead).observe(topBar); else addEventListener("resize",syncHead);
 
 /* ---------- 啟動 ---------- */
 function start(data){
