@@ -3,162 +3,200 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="給高年級在電子白板上玩的數獨：三種難度、10 分鐘下課倒數、筆記與提示。">
-<meta name="theme-color" content="#DCEFFF">
+<meta name="description" content="航海動漫風的數獨遊戲：三種海域難度、15 分鐘航海倒數、可暫停，給高年級電子白板玩。">
+<meta name="theme-color" content="#0C3456">
 <meta property="og:type" content="website">
 <meta property="og:title" content="下課數獨挑戰">
-<meta property="og:description" content="給高年級在電子白板上玩的數獨：三種難度、10 分鐘下課倒數、筆記與提示。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%f0%9f%a7%a9%3C/text%3E%3C/svg%3E">
+<meta property="og:description" content="航海動漫風的數獨遊戲：三種海域難度、15 分鐘航海倒數、可暫停，給高年級電子白板玩。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%e2%9a%93%3C/text%3E%3C/svg%3E">
 <title>下課數獨挑戰</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
-/* Layout: 貼紙闖關風 — 左邊大棋盤、右邊大按鈕操作區；直式螢幕改成上下堆疊。刻意只做亮色（投影/電子白板最清楚） */
+/* Layout: 航海動漫風 — 深海浪花背景上，左邊一張藏寶圖羊皮紙棋盤、右邊一本「航海日誌」操作區；直式螢幕改成上下堆疊。刻意只做一種配色（海洋夜色＋羊皮紙，白板投影最清楚） */
 :root{
-  --sky:#DCEFFF;      /* 方格紙底 */
-  --gridline:#C3E0FA;
-  --ink:#1D2140;      /* 粗描邊 */
-  --paper:#FFFFFF;
-  --tint:#EEF2FF;     /* 交錯宮格 */
-  --sun:#FFD23F;      /* 選取 */
-  --peer:#D4EBFF;     /* 同行同列同宮 */
-  --same:#FFF0B3;     /* 同數字 */
-  --grape:#6C4DF6;    /* 學生填的數字 */
-  --coral:#FF5C6C;    /* 錯誤 */
-  --coralbg:#FFE0E3;
-  --mint:#2FD18B;     /* 完成 */
-  --muted:#5A6187;
+  --sea:#0C3456;      /* 深海 */
+  --sea2:#16598A;     /* 淺海 */
+  --foam:#A6DCF2;     /* 浪花 */
+  --parch:#FBEFCF;    /* 羊皮紙 */
+  --parch2:#F0DCA8;   /* 交錯宮格 */
+  --wood:#7B4A25;     /* 船板 */
+  --wood2:#A2672F;
+  --ink:#1A1830;      /* 動漫粗描邊 */
+  --gold:#FFC93C;     /* 金幣 / 選取 */
+  --red:#E23D36;      /* 紅披風 */
+  --peer:#D5ECF4;     /* 同行同列同宮 */
+  --same:#FFE08A;     /* 同數字 */
+  --navy:#1B5FAA;     /* 學生填的數字 */
+  --wrongbg:#FFD3CF;
+  --mint:#34C98B;
+  --muted:#7A6547;
   --f-display:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
   --f-num:"Baloo 2","Arial Rounded MT Bold","Segoe UI",sans-serif;
-  color-scheme:light;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
 body{
   margin:0;padding-inline:16px;
-  background-color:var(--sky);
-  background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);
-  background-size:32px 32px;
+  background-color:var(--sea);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Cpath d='M0 30 Q15 18 30 30 T60 30 T90 30 T120 30' fill='none' stroke='%23A6DCF2' stroke-opacity='.13' stroke-width='3'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 30% -10%,var(--sea2),transparent 65%),
+    radial-gradient(ellipse at 100% 110%,var(--sea2),transparent 55%);
+  background-size:120px 40px,100% 100%,100% 100%;
   color:var(--ink);font-family:var(--f-display);font-weight:700;
   -webkit-user-select:none;user-select:none;
 }
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
-button:focus-visible{outline:4px solid var(--grape);outline-offset:2px}
+button:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
 
 .app{height:100%;max-width:1600px;margin:0 auto;padding-block:12px;display:flex;flex-direction:column;gap:12px}
 
 /* ---------- header ---------- */
 .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.brand{display:flex;align-items:center;gap:14px}
-.brand h1{margin:0;font-size:clamp(24px,3.4vw,44px);font-weight:900;letter-spacing:.04em;text-wrap:balance;
-  -webkit-text-stroke:0;text-shadow:3px 3px 0 var(--sun)}
-.tag{display:inline-block;background:var(--coral);color:var(--paper);border:3px solid var(--ink);border-radius:10px;
-  padding:4px 10px;font-size:clamp(13px,1.3vw,17px);transform:rotate(-5deg);box-shadow:3px 3px 0 var(--ink);white-space:nowrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:clamp(40px,4.4vw,60px);height:auto;flex:none;filter:drop-shadow(3px 3px 0 var(--ink))}
+.brand h1{margin:0;font-size:clamp(26px,3.6vw,48px);font-weight:900;letter-spacing:.06em;color:var(--gold);
+  -webkit-text-stroke:7px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--red);transform:rotate(-2deg);white-space:nowrap}
+.tag{display:inline-block;background:var(--red);color:var(--parch);border:3px solid var(--ink);
+  padding:4px 14px;font-size:clamp(13px,1.3vw,17px);transform:rotate(4deg);box-shadow:3px 3px 0 var(--ink);white-space:nowrap;
+  clip-path:polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%)}
 .levels{display:flex;gap:10px;flex-wrap:wrap}
-.levels button{background:var(--paper);border:3px solid var(--ink);border-radius:999px;padding:8px 18px;
+.levels button{background:var(--parch);border:3px solid var(--ink);border-radius:12px;padding:8px 16px;
   font-size:clamp(16px,1.6vw,22px);font-weight:900;box-shadow:4px 4px 0 var(--ink);display:flex;align-items:baseline;gap:8px;transition:transform .08s,box-shadow .08s}
 .levels button small{font-family:var(--f-num);font-weight:600;font-size:.72em;color:var(--muted)}
-.levels button[aria-selected="true"]{background:var(--sun)}
+.levels button[aria-selected="true"]{background:var(--gold)}
 .levels button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
 
 /* ---------- stage ---------- */
 .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:clamp(18px,3vw,56px)}
-.board{
-  --size:min(calc(100vh - 130px),58vw);
-  --size:min(calc(100dvh - 130px),58vw);
-  width:var(--size);height:var(--size);flex:none;
-  display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);
-  background:var(--paper);border:6px solid var(--ink);border-radius:18px;overflow:hidden;box-shadow:9px 9px 0 var(--ink);
+.map{
+  --size:min(calc(100vh - 140px),58vw);
+  --size:min(calc(100dvh - 140px),58vw);
+  position:relative;flex:none;width:calc(var(--size) + 28px);height:calc(var(--size) + 28px);padding:8px;
+  background:linear-gradient(135deg,var(--wood2),var(--wood));border:5px solid var(--ink);border-radius:20px;box-shadow:10px 10px 0 var(--ink);
 }
-.cell{position:relative;border:0;padding:0;margin:0;background:var(--paper);
-  border-right:1.5px solid var(--gridline);border-bottom:1.5px solid var(--gridline);
-  display:grid;place-items:center;font-family:var(--f-num);font-weight:800;
+.board{
+  width:100%;height:100%;
+  display:grid;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:repeat(var(--n),1fr);
+  background:var(--parch);border:4px solid var(--ink);border-radius:10px;overflow:hidden;
+}
+.cell{position:relative;border:0;padding:0;margin:0;background:var(--parch);
+  border-right:1.5px solid var(--parch2);border-bottom:1.5px solid var(--parch2);
+  display:grid;place-items:center;font-family:var(--f-num);font-weight:800;color:var(--ink);
   font-size:calc(var(--size) / var(--n) * .56);line-height:1;transition:background-color .12s}
-.cell.alt{background:var(--tint)}
+.cell.alt{background:var(--parch2)}
+.cell.alt{border-right-color:#E3C98E;border-bottom-color:#E3C98E}
 .cell.br{border-right:4px solid var(--ink)}
 .cell.bb{border-bottom:4px solid var(--ink)}
 .cell.peer{background:var(--peer)}
 .cell.same{background:var(--same)}
-.cell.sel{background:var(--sun)}
-.cell.wrong{background:var(--coralbg)}
-.cell.wrong.sel{background:var(--sun)}
+.cell.sel{background:var(--gold)}
+.cell.wrong{background:var(--wrongbg)}
+.cell.wrong.sel{background:var(--gold)}
 .cell .v{pointer-events:none;transform:translateY(.06em)}
-.cell.user .v{color:var(--grape)}
-.cell.wrong .v{color:var(--coral)}
-.cell.hinted .v{color:var(--mint);-webkit-text-stroke:1px var(--ink)}
+.cell.user .v{color:var(--navy)}
+.cell.wrong .v{color:var(--red)}
+.cell.hinted .v{color:var(--mint);-webkit-text-stroke:1.5px var(--ink)}
 .cell.shake{animation:shake .32s}
 .cell.pop{animation:pop .55s ease-out both}
 @keyframes shake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
-@keyframes pop{0%{background:var(--mint)}100%{}}
+@keyframes pop{0%{background:var(--foam)}100%{}}
 .notes{position:absolute;inset:6%;display:grid;grid-template-columns:repeat(var(--bc),1fr);pointer-events:none}
 .notes i{font-style:normal;font-size:calc(var(--size) / var(--n) * .22);color:var(--muted);display:grid;place-items:center;visibility:hidden}
 .notes i.on{visibility:visible}
 
+/* 暫停遮罩：蓋住棋盤，避免偷偷想 */
+.cover{position:absolute;inset:8px;border-radius:12px;border:4px solid var(--ink);z-index:2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Cpath d='M0 30 Q15 18 30 30 T60 30 T90 30 T120 30' fill='none' stroke='%23A6DCF2' stroke-opacity='.3' stroke-width='3'/%3E%3C/svg%3E"),
+    var(--sea);
+  color:var(--parch);font-size:clamp(20px,2.4vw,34px);font-weight:900;cursor:pointer}
+.cover svg{width:clamp(70px,9vw,120px);height:auto;animation:bob 2.4s ease-in-out infinite}
+.cover b{color:var(--gold);-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;font-size:1.5em}
+.cover small{font-size:.6em;color:var(--foam)}
+@keyframes bob{50%{transform:translateY(-8px) rotate(4deg)}}
+
 /* ---------- panel ---------- */
 .panel{width:clamp(280px,30vw,460px);display:flex;flex-direction:column;gap:clamp(10px,1.8vh,18px)}
-.card{background:var(--paper);border:4px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--ink);padding:12px 16px}
-.clock-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.label{font-size:clamp(14px,1.3vw,18px);color:var(--muted);letter-spacing:.08em}
+.log{background:var(--parch);border:4px solid var(--ink);border-radius:16px;box-shadow:6px 6px 0 var(--ink);padding:12px 16px}
+.clock-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.label{font-size:clamp(14px,1.3vw,18px);color:var(--muted);letter-spacing:.1em;display:block}
 #time{font-family:var(--f-num);font-weight:800;font-size:clamp(34px,4.2vw,58px);line-height:1;font-variant-numeric:tabular-nums}
-.bar{margin-top:8px;height:16px;border:3px solid var(--ink);border-radius:999px;background:var(--tint);overflow:hidden}
-.bar i{display:block;height:100%;width:100%;background:var(--mint);transform-origin:left;transition:transform .25s linear,background-color .3s}
-.bar.late i{background:var(--coral)}
-.clock-meta{margin-top:8px;display:flex;justify-content:space-between;gap:8px;font-size:clamp(14px,1.3vw,18px)}
-.clock-meta b{font-family:var(--f-num);font-size:1.25em;color:var(--coral)}
+#pause{flex:none;display:flex;align-items:center;gap:6px;background:var(--red);color:var(--parch);border:3px solid var(--ink);border-radius:12px;
+  box-shadow:4px 4px 0 var(--ink);padding:8px 14px;font-size:clamp(16px,1.6vw,22px);font-weight:900;transition:transform .08s,box-shadow .08s}
+#pause svg{width:1.3em;height:1.3em;stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+#pause[aria-pressed="true"]{background:var(--mint);color:var(--ink)}
+#pause:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+#pause:disabled{opacity:.5;cursor:not-allowed}
+/* 航線：小船從港口開往寶島 */
+.route{position:relative;margin:14px 0 4px;height:18px;border:3px solid var(--ink);border-radius:999px;
+  background:repeating-linear-gradient(90deg,var(--sea2) 0 10px,var(--sea) 10px 20px)}
+.route i{position:absolute;inset:0 auto 0 0;width:0;background:var(--foam);border-radius:999px;transition:width .3s linear}
+.route .ship{position:absolute;top:50%;left:0;width:40px;height:40px;transform:translate(-50%,-62%);transition:left .3s linear;pointer-events:none}
+.route .isle{position:absolute;right:-12px;top:50%;width:34px;height:34px;transform:translateY(-58%)}
+.route.late i{background:var(--red)}
+.clock-meta{margin-top:10px;display:flex;justify-content:space-between;gap:8px;font-size:clamp(14px,1.3vw,18px)}
+.clock-meta b{font-family:var(--f-num);font-size:1.25em;color:var(--red)}
 
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.2vh,14px)}
-.pad button{position:relative;height:clamp(58px,10vh,104px);background:var(--paper);border:4px solid var(--ink);border-radius:16px;
-  box-shadow:5px 5px 0 var(--ink);font-family:var(--f-num);font-weight:800;font-size:clamp(30px,5vh,58px);line-height:1;color:var(--grape);
+.pad button{position:relative;height:clamp(58px,10vh,104px);background:var(--parch);border:4px solid var(--ink);border-radius:14px;
+  box-shadow:5px 5px 0 var(--ink);font-family:var(--f-num);font-weight:800;font-size:clamp(30px,5vh,58px);line-height:1;color:var(--navy);
   transition:transform .08s,box-shadow .08s}
 .pad button:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
 .pad button small{position:absolute;right:8px;top:5px;font-size:clamp(12px,1.6vh,17px);color:var(--muted);font-weight:600}
-.pad button.full{background:var(--tint);color:var(--gridline);box-shadow:2px 2px 0 var(--ink)}
-.pad.noting button{background:#F3EFFF;border-style:dashed}
+.pad button.full{background:var(--parch2);color:#CDB27A;box-shadow:2px 2px 0 var(--ink)}
+.pad.noting button{background:var(--peer);border-style:dashed}
 
 .tools{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.tools button,.foot button{background:var(--paper);border:3px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--ink);
+.tools button,.foot button{background:linear-gradient(var(--wood2),var(--wood));color:var(--parch);border:3px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);
   padding:8px 4px;font-size:clamp(15px,1.5vw,20px);font-weight:900;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .08s,box-shadow .08s}
 .tools button:active,.foot button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
-.tools svg{width:clamp(22px,2.4vw,30px);height:clamp(22px,2.4vw,30px);stroke:var(--ink);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-.tools button[aria-pressed="true"]{background:var(--grape);color:var(--paper)}
-.tools button[aria-pressed="true"] svg{stroke:var(--paper)}
-.tools b{font-family:var(--f-num)}
+.tools svg{width:clamp(22px,2.4vw,30px);height:clamp(22px,2.4vw,30px);stroke:var(--parch);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tools button[aria-pressed="true"]{background:var(--gold);color:var(--ink)}
+.tools button[aria-pressed="true"] svg{stroke:var(--ink)}
+.tools b{font-family:var(--f-num);color:var(--gold)}
 .tools button:disabled{opacity:.45;cursor:not-allowed}
 .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
 .foot button{flex-direction:row;justify-content:center;padding:10px 6px}
-.foot #newGame{background:var(--sun)}
-.foot button.armed{background:var(--coral);color:var(--paper)}
-.rule{margin:0;font-size:clamp(13px,1.2vw,16px);font-weight:500;color:var(--muted);line-height:1.5}
-.rule strong{color:var(--ink)}
+.foot #newGame{background:var(--gold);color:var(--ink)}
+.foot button.armed{background:var(--red);color:var(--parch)}
+.rule{margin:0;font-size:clamp(13px,1.2vw,16px);font-weight:500;color:var(--foam);line-height:1.55}
+.rule strong{color:var(--gold)}
 .best{font-family:var(--f-num)}
 
 /* ---------- win ---------- */
-.win{position:fixed;inset:0;background:rgba(29,33,64,.55);display:grid;place-items:center;padding:16px;z-index:10}
-.win-card{background:var(--paper);border:5px solid var(--ink);border-radius:26px;box-shadow:10px 10px 0 var(--ink);
-  padding:28px clamp(20px,4vw,48px);text-align:center;max-width:560px;width:100%;animation:drop .5s cubic-bezier(.2,1.4,.4,1) both}
+.win{position:fixed;inset:0;display:grid;place-items:center;padding:16px;z-index:10;
+  background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,201,60,.22) 0 4deg,rgba(12,52,86,.82) 4deg 12deg)}
+.win-card{position:relative;background:var(--parch);border:5px solid var(--ink);border-radius:22px;box-shadow:10px 10px 0 var(--ink);
+  padding:26px clamp(20px,4vw,48px);text-align:center;max-width:580px;width:100%;animation:drop .5s cubic-bezier(.2,1.4,.4,1) both}
 @keyframes drop{from{transform:translateY(-40px) rotate(-3deg);opacity:0}to{transform:none;opacity:1}}
-.eyebrow{margin:0;display:inline-block;background:var(--mint);border:3px solid var(--ink);border-radius:10px;padding:2px 12px;letter-spacing:.2em;transform:rotate(-3deg)}
-.win h2{margin:12px 0 4px;font-size:clamp(36px,5vw,60px);font-weight:900;text-shadow:4px 4px 0 var(--sun)}
+.chest{width:clamp(80px,10vw,120px);height:auto;margin:-80px auto 0;display:block;filter:drop-shadow(4px 4px 0 var(--ink))}
+.eyebrow{margin:6px 0 0;display:inline-block;background:var(--red);color:var(--parch);border:3px solid var(--ink);padding:2px 16px;letter-spacing:.2em;transform:rotate(-3deg);
+  clip-path:polygon(0 0,100% 0,95% 50%,100% 100%,0 100%,5% 50%)}
+.win h2{margin:10px 0 4px;font-size:clamp(38px,5.4vw,64px);font-weight:900;color:var(--gold);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;text-shadow:5px 5px 0 var(--red)}
 .stars{display:flex;justify-content:center;gap:10px;margin:8px 0 14px}
 .stars svg{width:clamp(48px,6vw,72px);height:clamp(48px,6vw,72px)}
-.stars path{stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round;fill:var(--tint)}
-.stars .on path{fill:var(--sun)}
+.stars path{stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round;fill:var(--parch2)}
+.stars .on path{fill:var(--gold)}
 .stars .on{animation:starIn .45s cubic-bezier(.2,1.6,.4,1) both}
 .stars .on:nth-child(2){animation-delay:.15s}.stars .on:nth-child(3){animation-delay:.3s}
 @keyframes starIn{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0}
-.stats div{background:var(--tint);border:3px solid var(--ink);border-radius:14px;padding:8px}
+.stats div{background:var(--parch2);border:3px solid var(--ink);border-radius:12px;padding:8px}
 .stats dt{font-size:14px;color:var(--muted)}
 .stats dd{margin:0;font-family:var(--f-num);font-weight:800;font-size:clamp(26px,3vw,36px);font-variant-numeric:tabular-nums}
-.wbest{margin:14px 0 0;min-height:1.4em;color:var(--grape)}
+.wbest{margin:14px 0 0;min-height:1.4em;color:var(--navy)}
 .win-actions{margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.win-actions button{border:4px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:12px 26px;font-size:22px;font-weight:900;background:var(--sun)}
-.win-actions button + button{background:var(--paper)}
+.win-actions button{border:4px solid var(--ink);border-radius:14px;box-shadow:5px 5px 0 var(--ink);padding:12px 26px;font-size:22px;font-weight:900;background:var(--gold);color:var(--ink)}
+.win-actions button + button{background:linear-gradient(var(--wood2),var(--wood));color:var(--parch)}
 
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);opacity:0;
-  background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:14px;font-size:clamp(16px,1.6vw,22px);transition:.2s;pointer-events:none;z-index:20;max-width:calc(100% - 32px);text-align:center}
+  background:var(--parch);color:var(--ink);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:12px 22px;border-radius:14px;font-size:clamp(16px,1.6vw,22px);transition:.2s;pointer-events:none;z-index:20;max-width:calc(100% - 32px);text-align:center}
 .toast.show{transform:translate(-50%,0);opacity:1}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:11}
 
@@ -167,40 +205,85 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:2px}
   html,body{height:auto}
   .app{height:auto}
   .stage{flex-direction:column}
-  .board{--size:min(calc(100vw - 42px),66vh)}
+  .map{--size:min(calc(100vw - 70px),64vh)}
   .panel{width:100%;max-width:640px}
   .pad{grid-template-columns:repeat(var(--n),1fr)}
   .pad button{height:clamp(52px,8vh,90px);font-size:clamp(24px,4vh,48px)}
   .pad button small{display:none}
   .levels{width:100%}
   .levels button{flex:1;justify-content:center;padding:8px 10px}
+  .brand h1{font-size:clamp(22px,7vw,40px)}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="anchor" viewBox="0 0 64 64">
+      <circle cx="32" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="5"/>
+      <path d="M32 16v40M20 26h24M10 38c2 12 12 18 22 18s20-6 22-18" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+      <path d="M4 40l6-6 6 6M48 40l6-6 6 6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="boat" viewBox="0 0 64 64">
+      <path d="M31 6v36" stroke="#1A1830" stroke-width="3"/>
+      <path d="M33 8c12 6 18 18 18 30H33z" fill="#FBEFCF" stroke="#1A1830" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M29 14c-8 5-13 14-13 24h13z" fill="#E23D36" stroke="#1A1830" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M31 4l10 3-10 3z" fill="#FFC93C" stroke="#1A1830" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M6 42h52l-8 14H14z" fill="#A2672F" stroke="#1A1830" stroke-width="3" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
 
 </head>
 <body>
 <div class="app">
   <header class="top">
     <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="22" fill="#A2672F" stroke="#1A1830" stroke-width="4"/>
+        <circle cx="32" cy="32" r="9" fill="#FFC93C" stroke="#1A1830" stroke-width="4"/>
+        <g stroke="#1A1830" stroke-width="5" stroke-linecap="round"><path d="M32 2v16M32 46v16M2 32h16M46 32h16M11 11l11 11M42 42l11 11M53 11 42 22M22 42 11 53"/></g>
+        <g stroke="#FBEFCF" stroke-width="2" stroke-linecap="round"><path d="M32 3v14M32 47v14M3 32h14M47 32h14M12 12l10 10M42 42l10 10M52 12 42 22M22 42 12 52"/></g>
+      </svg>
       <h1>下課數獨挑戰</h1>
-      <span class="tag">下課 10 分鐘</span>
+      <span class="tag">航海時間 15 分鐘</span>
     </div>
     <nav class="levels" role="tablist" aria-label="難度">
-      <button type="button" role="tab" data-level="warm" id="lv-warm">暖身<small>6×6・約3分</small></button>
-      <button type="button" role="tab" data-level="normal" id="lv-normal">挑戰<small>9×9・約8分</small></button>
-      <button type="button" role="tab" data-level="hard" id="lv-hard">高手<small>9×9・10分+</small></button>
+      <button type="button" role="tab" data-level="warm" id="lv-warm">新手港<small>6×6・約3分</small></button>
+      <button type="button" role="tab" data-level="normal" id="lv-normal">冒險海域<small>9×9・約8分</small></button>
+      <button type="button" role="tab" data-level="hard" id="lv-hard">風暴海域<small>9×9・約15分</small></button>
     </nav>
   </header>
 
   <main class="stage">
-    <div id="board" class="board" aria-label="數獨棋盤"></div>
+    <div class="map">
+      <div id="board" class="board" aria-label="數獨棋盤"></div>
+      <div id="cover" class="cover" hidden>
+        <svg viewBox="0 0 64 64" style="color:var(--gold)"><use href="#anchor"/></svg>
+        <b>拋錨休息中</b>
+        <span>計時已停止</span>
+        <small>點這裡或按「起錨」繼續航行</small>
+      </div>
+    </div>
 
     <aside class="panel">
-      <div class="card clock">
-        <div class="clock-row"><span class="label">用時</span><span id="time">00:00</span></div>
-        <div class="bar" id="bar"><i id="barFill"></i></div>
-        <div class="clock-meta"><span id="barText">下課還剩 10:00</span><span>錯誤 <b id="miss">0</b></span></div>
+      <div class="log clock">
+        <div class="clock-row">
+          <div><span class="label">航海日誌・用時</span><span id="time">00:00</span></div>
+          <button type="button" id="pause" aria-pressed="false" title="暫停 (P 或空白鍵)">
+            <svg viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg><span>暫停</span></button>
+        </div>
+        <div class="route" id="route">
+          <i id="routeFill"></i>
+          <svg class="isle" viewBox="0 0 40 40" aria-hidden="true">
+            <ellipse cx="20" cy="30" rx="17" ry="7" fill="#F0DCA8" stroke="#1A1830" stroke-width="2.5"/>
+            <path d="M20 29c0-8 1-14 4-18" fill="none" stroke="#7B4A25" stroke-width="3"/>
+            <path d="M24 11c-6-4-12-2-14 2 5-2 9-1 14-2zm0 0c4-5 11-5 13-1-5-1-9 0-13 1zm0 0c-2 5-1 9 2 11" fill="#34C98B" stroke="#1A1830" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M8 27l4 3M10 30l3-4" stroke="#E23D36" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <svg class="ship" id="ship" aria-hidden="true"><use href="#boat"/></svg>
+        </div>
+        <div class="clock-meta"><span id="barText">距離靠岸 15:00</span><span>觸礁 <b id="miss">0</b> 次</span></div>
       </div>
 
       <div id="pad" class="pad"></div>
@@ -211,13 +294,13 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:2px}
         <button type="button" id="erase" title="擦掉 (Delete)">
           <svg viewBox="0 0 24 24"><path d="m7 21-4-4a2 2 0 0 1 0-3L13 4a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3l-9 9"/><path d="M7 21h14"/><path d="m9 10 6 6"/></svg>擦掉</button>
         <button type="button" id="note" aria-pressed="false" title="筆記模式 (N)">
-          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>筆記</button>
-        <button type="button" id="hint" title="提示">
-          <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2Z"/></svg>提示 <b id="hintLeft">3</b></button>
+          <svg viewBox="0 0 24 24"><path d="M20 3C12 4 6 10 4 21"/><path d="M20 3c-1 6-5 10-11 11"/><path d="M8 17h5"/></svg>筆記</button>
+        <button type="button" id="hint" title="望遠鏡提示">
+          <svg viewBox="0 0 24 24"><path d="m3 14 13-7 2 4-13 7z"/><path d="m16 7 3-1.5 2 4-3 1.5"/><path d="M9 16l-2 6M11 15l3 7"/></svg>提示 <b id="hintLeft">3</b></button>
       </div>
 
       <div class="foot">
-        <button type="button" id="newGame">新題目</button>
+        <button type="button" id="newGame">新航線</button>
         <button type="button" id="full">全螢幕</button>
         <button type="button" id="sound" aria-pressed="true">音效開</button>
       </div>
@@ -229,18 +312,28 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:2px}
 
 <div id="win" class="win" hidden>
   <div class="win-card" role="dialog" aria-labelledby="winTitle">
-    <p class="eyebrow">任務完成</p>
-    <h2 id="winTitle">數獨大師</h2>
+    <svg class="chest" viewBox="0 0 100 80" aria-hidden="true">
+      <path d="M14 30h72v42H14z" fill="#A2672F" stroke="#1A1830" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M14 30c0-16 12-24 36-24s36 8 36 24z" fill="#7B4A25" stroke="#1A1830" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="30" cy="22" r="7" fill="#FFC93C" stroke="#1A1830" stroke-width="3"/>
+      <circle cx="50" cy="16" r="8" fill="#FFC93C" stroke="#1A1830" stroke-width="3"/>
+      <circle cx="70" cy="22" r="7" fill="#FFC93C" stroke="#1A1830" stroke-width="3"/>
+      <path d="M14 30h72" stroke="#1A1830" stroke-width="4"/>
+      <path d="M26 30v42M74 30v42" stroke="#FFC93C" stroke-width="5"/>
+      <rect x="42" y="36" width="16" height="16" rx="3" fill="#FFC93C" stroke="#1A1830" stroke-width="3"/>
+    </svg>
+    <p class="eyebrow">找到寶藏了！</p>
+    <h2 id="winTitle">傳說船長</h2>
     <div class="stars" id="stars"></div>
     <dl class="stats">
-      <div><dt>用時</dt><dd id="wTime">00:00</dd></div>
-      <div><dt>錯誤</dt><dd id="wMiss">0</dd></div>
-      <div><dt>提示</dt><dd id="wHint">0</dd></div>
+      <div><dt>航行時間</dt><dd id="wTime">00:00</dd></div>
+      <div><dt>觸礁</dt><dd id="wMiss">0</dd></div>
+      <div><dt>望遠鏡</dt><dd id="wHint">0</dd></div>
     </dl>
     <p id="wBest" class="wbest"></p>
     <div class="win-actions">
-      <button type="button" id="again">再玩一局</button>
-      <button type="button" id="harder">挑戰更難的</button>
+      <button type="button" id="again">再出航一次</button>
+      <button type="button" id="harder">挑戰更險的海域</button>
     </div>
   </div>
 </div>
@@ -251,11 +344,11 @@ button:focus-visible{outline:4px solid var(--grape);outline-offset:2px}
 (function(){
 const $ = s => document.querySelector(s);
 const LEVELS = {
-  warm:  {n:6, br:2, bc:3, givens:18, name:'暖身', target:240, next:'normal'},
-  normal:{n:9, br:3, bc:3, givens:40, name:'挑戰', target:600, next:'hard'},
-  hard:  {n:9, br:3, bc:3, givens:33, name:'高手', target:780, next:null}
+  warm:  {n:6, br:2, bc:3, givens:18, name:'新手港',   target:300, next:'normal'},
+  normal:{n:9, br:3, bc:3, givens:40, name:'冒險海域', target:720, next:'hard'},
+  hard:  {n:9, br:3, bc:3, givens:33, name:'風暴海域', target:900, next:null}
 };
-const RECESS = 600;
+const RECESS = 900;   // 航海時間 15 分鐘
 const store = {
   get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -309,7 +402,7 @@ function newState(level){
     if(solveCount(puz.slice(),n,2,false)!==1){ puz[i]=a; puz[j]=b; } else filled-=need;
   }
   return {level, sol, given:puz.map(v=>v>0), hinted:Array(N).fill(false), cur:puz.slice(), notes:Array(N).fill(0),
-          mistakes:0, hints:3, elapsed:0, done:false, moves:0};
+          mistakes:0, hints:3, elapsed:0, done:false, moves:0, paused:false};
 }
 
 /* ---------- 畫面 ---------- */
@@ -370,14 +463,22 @@ function render(){
   $('#hintLeft').textContent=S.hints;
   $('#hint').disabled=S.hints<=0 || S.done;
   $('#undo').disabled=!undoStack.length || S.done;
+  // 暫停狀態
+  const p=$('#pause');
+  $('#cover').hidden=!S.paused;
+  p.disabled=S.done;
+  p.setAttribute('aria-pressed', S.paused);
+  p.querySelector('span').textContent=S.paused?'起錨':'暫停';
+  p.querySelector('svg').innerHTML=S.paused?'<path d="M7 4l13 8-13 8z"/>':'<path d="M9 5v14M15 5v14"/>';
 }
-function fmt(t){ t=Math.floor(t); return String(t/60|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function fmt(t){ t=Math.max(0,Math.floor(t)); return String(t/60|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
 function tickView(){
   $('#time').textContent=fmt(S.elapsed);
-  const left=RECESS-S.elapsed;
-  $('#barFill').style.transform=`scaleX(${Math.max(0,left)/RECESS})`;
-  $('#bar').classList.toggle('late', left<120);
-  $('#barText').textContent = left>0 ? '下課還剩 '+fmt(left) : '延長賽！加油';
+  const left=RECESS-S.elapsed, pct=Math.min(1,S.elapsed/RECESS)*100;
+  $('#routeFill').style.width=pct+'%';
+  $('#ship').style.left=pct+'%';
+  $('#route').classList.toggle('late', left<120);
+  $('#barText').textContent = S.paused ? '拋錨中，時間暫停' : left>0 ? '距離靠岸 '+fmt(left) : '延長航行！加油';
 }
 function showBest(){
   const b=store.get('sudoku-best-'+S.level);
@@ -398,7 +499,15 @@ function beep(f, d=.09, type='triangle', vol=.07, delay=0){
 }
 
 /* ---------- 操作 ---------- */
-function select(i){ sel=i; beep(520,.04,'sine',.03); render(); }
+function togglePause(){
+  if(S.done) return;
+  S.paused=!S.paused;
+  if(S.paused){ beep(330,.15,'sine',.06); beep(247,.2,'sine',.06,.12); }
+  else { beep(392,.1,'triangle',.06); beep(523,.14,'triangle',.06,.1); }
+  render(); tickView(); save();
+}
+function blocked(){ if(S.paused){ toast('船正在拋錨休息，先按「起錨」繼續'); return true; } return S.done; }
+function select(i){ if(S.paused) return; sel=i; beep(520,.04,'sine',.03); render(); }
 function pushUndo(i){ undoStack.push({i, v:S.cur[i], notes:S.notes.slice(), hinted:S.hinted[i]}); if(undoStack.length>200) undoStack.shift(); }
 function unitsOf(i){
   const {n,br,bc}=L(), r=i/n|0, c=i%n, row=[], col=[], box=[];
@@ -418,9 +527,9 @@ function celebrateUnits(i){
   if(any){ beep(660,.1,'triangle',.06); beep(880,.14,'triangle',.06,.09); }
 }
 function input(v){
-  if(S.done) return;
+  if(blocked()) return;
   if(sel<0){ toast('先點一個格子，再按數字'); return; }
-  if(S.given[sel] || S.hinted[sel]){ toast('這格是題目給的，不能改'); return; }
+  if(S.given[sel] || S.hinted[sel]){ toast('這格是藏寶圖上原本就有的，不能改'); return; }
   const i=sel;
   if(noteMode && !S.cur[i]){
     pushUndo(i); S.notes[i]^=1<<v; S.moves++; beep(740,.04,'sine',.03);
@@ -440,16 +549,17 @@ function input(v){
   render(); save(); checkWin();
 }
 function erase(){
-  if(sel<0 || S.done || S.given[sel] || S.hinted[sel]) return;
+  if(blocked() || sel<0 || S.given[sel] || S.hinted[sel]) return;
   if(!S.cur[sel] && !S.notes[sel]) return;
   pushUndo(sel); S.cur[sel]=0; S.notes[sel]=0; S.moves++; render(); save();
 }
 function undo(){
-  const u=undoStack.pop(); if(!u || S.done) return;
+  if(blocked()) return;
+  const u=undoStack.pop(); if(!u) return;
   S.cur[u.i]=u.v; S.notes=u.notes; S.hinted[u.i]=u.hinted; sel=u.i; render(); save();
 }
 function hint(){
-  if(S.done || S.hints<=0) return;
+  if(blocked() || S.hints<=0) return;
   let i = (sel>=0 && !S.given[sel] && S.cur[sel]!==S.sol[sel]) ? sel : -1;
   if(i<0){
     const empty=S.cur.map((v,k)=>k).filter(k=>S.cur[k]!==S.sol[k]);
@@ -466,13 +576,13 @@ function hint(){
 function starSVG(on){ return `<svg viewBox="0 0 50 50" class="${on?'on':''}"><path d="M25 3l6.6 14.2 15.4 1.9-11.4 10.6 3 15.3L25 37.4 11.4 45l3-15.3L3 19.1l15.4-1.9z"/></svg>`; }
 function checkWin(){
   if(S.done || !S.cur.every((v,i)=>v===S.sol[i])) return;
-  S.done=true; save();
+  S.done=true; S.paused=false; save();
   let stars=3;
   if(S.elapsed>L().target) stars--;
   if(S.mistakes>3) stars--;
   if(3-S.hints>=2) stars--;
   stars=Math.max(1,stars);
-  $('#winTitle').textContent = stars===3?'數獨大師':stars===2?'解謎高手':'任務達成';
+  $('#winTitle').textContent = stars===3?'傳說船長':stars===2?'王牌大副':'見習水手';
   $('#stars').innerHTML=[0,1,2].map(k=>starSVG(k<stars)).join('');
   $('#wTime').textContent=fmt(S.elapsed);
   $('#wMiss').textContent=S.mistakes;
@@ -480,7 +590,7 @@ function checkWin(){
   const key='sudoku-best-'+S.level, b=store.get(key);
   if(!b || S.elapsed<b.t){
     store.set(key,{t:Math.floor(S.elapsed),stars});
-    $('#wBest').textContent = b ? `刷新本機紀錄！比之前快了 ${fmt(b.t-S.elapsed)}` : '這是這台電腦的第一筆紀錄！';
+    $('#wBest').textContent = b ? `刷新本機紀錄！比之前快了 ${fmt(b.t-S.elapsed)}` : '這是這台電腦的第一筆航海紀錄！';
   } else $('#wBest').textContent=`本機最佳紀錄：${fmt(b.t)}`;
   showBest(); render();
   setTimeout(()=>{ $('#win').hidden=false; confetti(); [523,659,784,1047].forEach((f,k)=>beep(f,.18,'triangle',.07,k*.12)); }, 450);
@@ -503,7 +613,7 @@ function startNew(level){
 
 /* ---------- 計時 / 存檔 ---------- */
 function loop(now){
-  if(lastTick && S && !S.done && !document.hidden){
+  if(lastTick && S && !S.done && !S.paused && !document.hidden){
     S.elapsed+=Math.min(1,(now-lastTick)/1000);
     tickView();
     if(++saveCount%120===0) save();
@@ -512,20 +622,23 @@ function loop(now){
 }
 function save(){ store.set('sudoku-game', S); }
 
-/* ---------- 彩帶 ---------- */
+/* ---------- 彩帶（金幣色） ---------- */
 function confetti(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const cv=$('#fx'), ctx=cv.getContext('2d'), dpr=window.devicePixelRatio||1;
-  cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; ctx.scale(dpr,dpr);
+  cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
   const cs=getComputedStyle(document.documentElement);
-  const cols=['--sun','--coral','--mint','--grape','--peer'].map(k=>cs.getPropertyValue(k).trim());
-  const ps=Array.from({length:160},()=>({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*.35,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,
-    w:8+Math.random()*8,h:5+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0]}));
+  const cols=['--gold','--gold','--red','--foam','--parch'].map(k=>cs.getPropertyValue(k).trim());
+  const ps=Array.from({length:170},()=>({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*.35,vx:(Math.random()-.5)*16,vy:-Math.random()*14-4,
+    w:8+Math.random()*8,h:5+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0],coin:Math.random()<.35}));
   const t0=performance.now();
   (function f(t){
     ctx.clearRect(0,0,innerWidth,innerHeight);
     for(const p of ps){ p.vy+=.35; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr;
-      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); }
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c;
+      if(p.coin){ ctx.beginPath(); ctx.ellipse(0,0,p.w*.6,p.w*.6*Math.abs(Math.cos(p.r)),0,0,Math.PI*2); ctx.fill(); }
+      else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore(); }
     if(t-t0<3200) requestAnimationFrame(f); else ctx.clearRect(0,0,innerWidth,innerHeight);
   })(t0);
 }
@@ -537,11 +650,12 @@ function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show')
 board.addEventListener('click',e=>{ const c=e.target.closest('.cell'); if(c) select(+c.dataset.i); });
 pad.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) input(+b.dataset.v); });
 $('#erase').onclick=erase; $('#undo').onclick=undo; $('#hint').onclick=hint;
-$('#note').onclick=()=>{ noteMode=!noteMode; toast(noteMode?'筆記模式：把「可能的數字」小小記下來':'回到一般模式'); render(); };
-$('#newGame').onclick=e=>guarded('new',e.currentTarget,'正在玩喔！再按一次「新題目」確認換題',()=>startNew(S.level));
+$('#pause').onclick=togglePause; $('#cover').onclick=togglePause;
+$('#note').onclick=()=>{ if(blocked()) return; noteMode=!noteMode; toast(noteMode?'筆記模式：把「可能的數字」小小記下來':'回到一般模式'); render(); };
+$('#newGame').onclick=e=>guarded('new',e.currentTarget,'正在航行喔！再按一次「新航線」確認換題',()=>startNew(S.level));
 document.querySelectorAll('.levels button').forEach(b=>b.onclick=()=>{
   if(b.dataset.level===S.level && !S.done) return;
-  guarded('lv-'+b.dataset.level,b,'會放棄這一局，再按一次確認換難度',()=>startNew(b.dataset.level));
+  guarded('lv-'+b.dataset.level,b,'會放棄這趟航行，再按一次確認換海域',()=>startNew(b.dataset.level));
 });
 $('#again').onclick=()=>startNew(S.level);
 $('#harder').onclick=()=>{ if(L().next) startNew(L().next); };
@@ -555,6 +669,7 @@ $('#full').onclick=()=>{
 document.addEventListener('keydown',e=>{
   if(!S) return;
   const n=L().n;
+  if(e.key.toLowerCase()==='p' || (e.key===' ' && e.target===document.body)){ e.preventDefault(); togglePause(); return; }
   if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='z'){ e.preventDefault(); undo(); return; }
   if(/^[1-9]$/.test(e.key) && +e.key<=n){ input(+e.key); return; }
   if(e.key==='Backspace'||e.key==='Delete'||e.key==='0'){ erase(); return; }
@@ -572,7 +687,7 @@ document.addEventListener('keydown',e=>{
 function start(data){
   const snd=store.get('sudoku-sound'); if(snd===false){ soundOn=false; $('#sound').textContent='音效關'; $('#sound').setAttribute('aria-pressed','false'); }
   const saved=(data && data.S) || store.get('sudoku-game');
-  if(saved && LEVELS[saved.level] && Array.isArray(saved.cur) && !saved.done){ S=saved; build(); tickView(); }
+  if(saved && LEVELS[saved.level] && Array.isArray(saved.cur) && !saved.done){ S=saved; S.paused=!!S.paused; build(); tickView(); }
   else startNew('normal');
   requestAnimationFrame(loop);
 }
