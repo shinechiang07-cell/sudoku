@@ -1,0 +1,6 @@
+# 這個倉庫只放網頁本身，其餘一律不追蹤
+*
+!index.html
+!README.md
+!.gitignore
+!.nojekyll
