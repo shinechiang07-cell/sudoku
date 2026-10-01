@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆與排行榜，給高年級電子白板玩。">
+<meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
 <meta name="theme-color" content="#0C3456">
 <meta property="og:type" content="website">
 <meta property="og:title" content="下課數獨挑戰">
-<meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆與排行榜，給高年級電子白板玩。">
+<meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%e2%9a%93%3C/text%3E%3C/svg%3E">
 <title>下課數獨挑戰</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -371,6 +371,7 @@ tbody tr.me{background:var(--gold)}
     <div class="top-actions">
       <button type="button" class="btn paper" id="openRank">排行榜</button>
       <button type="button" class="btn paper" id="full">全螢幕</button>
+      <button type="button" class="btn paper" id="music" aria-pressed="true">音樂開</button>
       <button type="button" class="btn paper" id="sound" aria-pressed="true">音效開</button>
     </div>
   </header>
@@ -1072,6 +1073,73 @@ $('#penRow').addEventListener('click',e=>{
   if(b.dataset.tool==='eraser') penTool='eraser'; else { penTool='pen'; penColor=b.dataset.color; }
 });
 
+/* ---------- 背景音樂：自己作曲、即時合成的 6/8 拍水手歌，不用任何音樂檔 ---------- */
+// 每個小節：[和弦, [[音高(MIDI), 八分音符數], ...]]，音高 0 代表休止
+const CH={G:[43,4],C:[48,4],D:[50,4],Em:[40,3],Am:[45,3]};
+const SONG_A=[['G',[[74,1],[79,2],[79,1],[81,1],[83,1]]],['C',[[84,2],[83,1],[81,2],[79,1]]],['D',[[78,2],[81,1],[86,2],[84,1]]],['G',[[83,3],[79,3]]],
+              ['Em',[[76,1],[79,2],[83,1],[81,1],[79,1]]],['C',[[76,2],[79,1],[84,2],[83,1]]],['D',[[81,1],[83,1],[81,1],[78,1],[76,1],[78,1]]],['G',[[79,3],[0,3]]]];
+const SONG_B=[['C',[[88,2],[86,1],[84,2],[88,1]]],['G',[[86,2],[83,1],[79,3]]],['Am',[[81,1],[84,1],[88,1],[86,2],[84,1]]],['D',[[83,2],[81,1],[78,3]]],
+              ['C',[[79,1],[81,1],[84,1],[88,2],[84,1]]],['G',[[86,3],[83,2],[79,1]]],['D',[[81,2],[86,1],[84,1],[83,1],[81,1]]],['G',[[79,3],[0,3]]]];
+const SONG=[...SONG_A,...SONG_A,...SONG_B,...SONG_B];
+const MEL=SONG.map(([,notes])=>{ const at={}; let p=0; for(const [m,d] of notes){ if(m) at[p]=[m,d]; p+=d; } return at; });
+const STEPS=SONG.length*6, MUSIC_VOL=.55;
+let musicOn=true, mStep=0, mNext=0, mBus=null, mFilter=null, noiseBuf=null;
+function getAC(){
+  ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended') ac.resume();
+  return ac;
+}
+function musicSetup(){
+  if(mBus) return;
+  const a=getAC();
+  mBus=a.createGain(); mBus.gain.value=0; mBus.connect(a.destination);
+  mFilter=a.createBiquadFilter(); mFilter.type='lowpass'; mFilter.frequency.value=2200; mFilter.connect(mBus);
+  noiseBuf=a.createBuffer(1, a.sampleRate*.1, a.sampleRate);
+  const ch=noiseBuf.getChannelData(0); for(let k=0;k<ch.length;k++) ch[k]=Math.random()*2-1;
+}
+const hz=m=>440*Math.pow(2,(m-69)/12);
+function note(f,t,d,type,vol,dest){
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type=type; o.frequency.value=f;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.012); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g).connect(dest); o.start(t); o.stop(t+d+.05);
+}
+function shaker(t,vol){
+  const s=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain();
+  s.buffer=noiseBuf; f.type='highpass'; f.frequency.value=6000;
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+.06);
+  s.connect(f).connect(g).connect(mBus); s.start(t); s.stop(t+.08);
+}
+function playStep(i,t,ed){
+  const bar=i/6|0, pos=i%6, [root,third]=CH[SONG[bar][0]];
+  if(pos===0) note(hz(root),t,ed*2.6,'triangle',.22,mBus);          // 低音「咚」
+  if(pos===3) note(hz(root+7),t,ed*2.6,'triangle',.18,mBus);
+  if(pos!==0 && pos!==3) for(const iv of [12,12+third,19]) note(hz(root+iv),t,ed*.55,'triangle',.035,mBus);  // 和弦「恰恰」
+  const m=MEL[bar][pos];
+  if(m){ note(hz(m[0]),t,ed*m[1]*.92,'square',.06,mFilter); note(hz(m[0]+12),t,ed*m[1]*.6,'triangle',.03,mFilter); }  // 手風琴般的旋律
+  shaker(t, pos%3===0 ? .05 : .025);
+}
+function musicWanted(){ return musicOn && S && !S.demo && !S.done && !S.paused && $('#home').hidden && !document.hidden; }
+function musicTick(){
+  if(!mBus) return;
+  const want=musicWanted();
+  mBus.gain.setTargetAtTime(want?MUSIC_VOL:0, ac.currentTime, want?.4:.15);
+  if(!want){ mNext=0; return; }
+  const ed = RECESS-S.elapsed<120 ? .17 : .2;   // 最後 2 分鐘音樂變快，增加緊張感
+  if(mNext<ac.currentTime) mNext=ac.currentTime+.06;
+  while(mNext<ac.currentTime+.18){ playStep(mStep,mNext,ed); mNext+=ed; mStep=(mStep+1)%STEPS; }
+}
+setInterval(musicTick,40);
+function musicStart(){ if(musicOn){ try{ musicSetup(); }catch(e){} } }
+// 瀏覽器規定要使用者先點一下才能出聲，所以在第一次點擊時準備好音樂
+document.addEventListener('pointerdown',musicStart); document.addEventListener('keydown',musicStart);
+$('#music').onclick=e=>{
+  musicOn=!musicOn; store.set('sudoku-music',musicOn);
+  e.currentTarget.textContent=musicOn?'音樂開':'音樂關'; e.currentTarget.setAttribute('aria-pressed',musicOn);
+  if(musicOn) musicStart();
+  toast(musicOn?'背景音樂開啟（拋錨暫停時會停下來）':'背景音樂已關閉');
+};
+
 /* ---------- 事件 ---------- */
 board.addEventListener('click',e=>{ const c=e.target.closest('.cell'); if(c) select(+c.dataset.i); });
 pad.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) input(+b.dataset.v); });
@@ -1130,6 +1198,7 @@ syncHead(); if(window.ResizeObserver) new ResizeObserver(syncHead).observe(topBa
 /* ---------- 啟動 ---------- */
 function start(data){
   const snd=store.get('sudoku-sound'); if(snd===false){ soundOn=false; $('#sound').textContent='音效關'; $('#sound').setAttribute('aria-pressed','false'); }
+  if(store.get('sudoku-music')===false){ musicOn=false; $('#music').textContent='音樂關'; $('#music').setAttribute('aria-pressed','false'); }
   const snap=data && data.S;
   if(snap && LEVELS[snap.level] && snap.player){ S=snap; build(); $('#home').hidden=!!data.inGame; if(!data.inGame) showHome(); }
   else {
