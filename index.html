@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
+<meta name="description" content="航海動漫風的數獨遊戲：單人、今日挑戰、雙人對戰、圖案數獨、Boss 關，還有寶物圖鑑、徽章與排行榜。">
 <meta name="theme-color" content="#2FB4EE">
 <meta property="og:type" content="website">
 <meta property="og:title" content="下課數獨挑戰">
-<meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
+<meta property="og:description" content="航海動漫風的數獨遊戲：單人、今日挑戰、雙人對戰、圖案數獨、Boss 關，還有寶物圖鑑、徽章與排行榜。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%e2%9a%93%3C/text%3E%3C/svg%3E">
 <title>下課數獨挑戰</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -248,9 +248,9 @@ body.at-home .app{visibility:hidden}
 .home-card{width:100%;padding:clamp(16px,2.4vw,30px);display:flex;flex-direction:column;gap:clamp(12px,1.8vh,20px);animation:drop .5s .15s cubic-bezier(.2,1.4,.4,1) both}
 .field-label{font-size:clamp(17px,1.8vw,22px);margin-bottom:8px;display:block}
 .name-row{display:flex;gap:12px;flex-wrap:wrap}
-#nameInput{flex:1;min-width:0;font:inherit;font-size:clamp(24px,3vw,36px);font-weight:900;padding:10px 16px;border:4px solid var(--ink);border-radius:14px;
+#nameInput,#nameInput2{flex:1;min-width:0;font:inherit;font-size:clamp(24px,3vw,36px);font-weight:900;padding:10px 16px;border:4px solid var(--ink);border-radius:14px;
   background:var(--paper,#fff);color:var(--ink);box-shadow:inset 3px 3px 0 var(--parch2);-webkit-user-select:text;user-select:text}
-#nameInput::placeholder{color:var(--parch3)}
+#nameInput::placeholder,#nameInput2::placeholder{color:var(--parch3)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .chips button{border:2px solid var(--ink);border-radius:999px;background:var(--parch2);padding:4px 12px;font-size:16px}
 .chips span{font-size:15px;color:var(--muted);align-self:center}
@@ -362,6 +362,68 @@ tbody tr.me{background:var(--gold)}
   .lv-cards,.rules,.breakdown{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- 玩法選擇、雙人對戰、事件、寶藏格、圖鑑 ---------- */
+.modes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.mode{border:3px solid var(--ink);border-radius:12px;background:var(--parch);box-shadow:3px 3px 0 var(--ink);padding:8px 2px;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .08s,box-shadow .08s}
+.mode b{font-size:clamp(14px,1.4vw,18px);white-space:nowrap}
+.mode span{font-size:clamp(11px,1vw,13px);color:var(--muted);text-align:center}
+.mode[aria-checked="true"]{background:var(--gold);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.mode[aria-checked="true"] span{color:var(--ink)}
+.mode.locked{opacity:.55}
+.mode-note{margin:8px 0 0;font-size:clamp(14px,1.3vw,16px);color:var(--wood);min-height:2.6em;line-height:1.3}
+.name-row input{flex:1;min-width:0}
+
+.cell.dg{background-image:linear-gradient(rgba(138,92,246,.16),rgba(138,92,246,.16))}
+.cell.t0 .v{color:var(--red)}
+.cell.t1 .v{color:var(--navy)}
+.cell.gem::before{content:"";position:absolute;inset:7%;border:3px dashed #D99A00;border-radius:18%;pointer-events:none;background:rgba(255,201,60,.18)}
+.cell.gem::after{content:"✦";position:absolute;right:9%;top:5%;font-size:.3em;line-height:1;color:#D99A00;pointer-events:none}
+.cell.tip{animation:tip .9s ease-in-out infinite}
+@keyframes tip{50%{background-color:var(--mint)}}
+.cell.blot::after{content:"";position:absolute;inset:5%;background:var(--ink);border-radius:46% 54% 60% 40%/52% 44% 56% 48%;pointer-events:none;z-index:1}
+.board.sym .cell{font-size:calc(var(--size) / var(--n) * .46)}
+.board.sym .notes i{font-size:calc(var(--size) / var(--n) * .17)}
+.pad.sym button{font-size:clamp(24px,4vh,44px)}
+
+.event{position:absolute;left:50%;top:16px;z-index:5;transform:translate(-50%,-30px);opacity:0;pointer-events:none;transition:transform .3s,opacity .3s;
+  background:var(--ink);color:var(--parch);border:3px solid var(--gold);border-radius:18px;padding:8px 18px;font-size:clamp(15px,1.7vw,22px);text-align:center;width:max-content;max-width:92%}
+.event.show{opacity:1;transform:translate(-50%,0)}
+.combo.wind{right:auto;left:50%;top:auto;bottom:-16px;transform:translateX(-50%);background:var(--mint);color:var(--ink);white-space:nowrap;font-size:12px;z-index:1}
+
+.duo-bar{margin-top:8px}
+.duo-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team{border:3px solid var(--ink);border-radius:12px;padding:3px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;background:var(--parch2);opacity:.55;min-width:0}
+.team span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(13px,1.3vw,17px)}
+.team b{font-family:var(--f-num);font-size:clamp(22px,2.4vw,32px);line-height:1}
+.team.t0{color:var(--red)} .team.t1{color:var(--navy)}
+.team.on{opacity:1;background:var(--gold);box-shadow:3px 3px 0 var(--ink)}
+.turnbar{height:10px;border:2px solid var(--ink);border-radius:999px;margin-top:6px;overflow:hidden;background:var(--parch2)}
+.turnbar i{display:block;height:100%;width:100%;background:var(--mint)}
+body.duo .scorebox{display:none}
+body.duo #itemBox{display:none!important}
+
+.items-row{grid-template-columns:repeat(5,1fr);gap:6px}
+.item .nm{font-size:clamp(11px,1.05vw,14px);white-space:nowrap}
+
+.rankline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:clamp(16px,1.7vw,22px)}
+.rankline span{font-size:.8em;color:var(--muted)}
+.xpbar{height:16px;border:3px solid var(--ink);border-radius:999px;background:var(--parch2);overflow:hidden;flex:1;min-width:120px}
+.xpbar i{display:block;height:100%;background:var(--mint)}
+.rank-card h3{margin:4px 0 0;font-size:clamp(17px,1.8vw,22px)}
+.al-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+.al{border:3px solid var(--ink);border-radius:14px;background:var(--parch2);padding:8px 4px;text-align:center;display:flex;flex-direction:column;gap:2px;font-size:clamp(13px,1.3vw,16px)}
+.al .ico{font-size:34px;line-height:1.2}
+.al small{color:var(--muted);font-weight:700;font-size:12px}
+.al.off{opacity:.5;filter:grayscale(1)}
+
+.rewards{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 10px}
+.rw{border:3px solid var(--ink);border-radius:999px;background:var(--gold);padding:3px 12px;font-size:clamp(14px,1.4vw,17px)}
+.rw.badge{background:var(--foam)}
+.rw.rankup{background:var(--mint)}
+.review{margin:0 0 10px;font-size:clamp(13px,1.3vw,16px);color:var(--wood);line-height:1.5;text-align:left}
+.win-card{margin-top:60px}
+@media (max-width:640px){ .modes{grid-template-columns:repeat(2,1fr)} }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -434,6 +496,7 @@ tbody tr.me{background:var(--gold)}
     </div>
     <div class="top-actions">
       <button type="button" class="btn paper" id="openRank">排行榜</button>
+      <button type="button" class="btn paper" id="openAlbum">圖鑑</button>
       <button type="button" class="btn paper" id="full">全螢幕</button>
       <button type="button" class="btn paper" id="music" aria-pressed="true">音樂開</button>
       <button type="button" class="btn paper" id="sound" aria-pressed="true">音效開</button>
@@ -444,6 +507,7 @@ tbody tr.me{background:var(--gold)}
     <div class="map" id="map">
       <div id="board" class="board" aria-label="數獨棋盤"></div>
       <canvas id="ink" class="ink" aria-label="手寫畫板"></canvas>
+      <div class="event" id="event" role="status" aria-live="polite"></div>
       <div id="cover" class="cover" hidden>
         <svg viewBox="0 0 64 64" style="color:var(--gold)"><use href="#anchor"/></svg>
         <b>拋錨休息中</b>
@@ -456,7 +520,7 @@ tbody tr.me{background:var(--gold)}
       <div class="log">
         <div class="log-row">
           <div><span class="label">航行時間</span><span id="time">00:00</span></div>
-          <div class="scorebox"><span class="label">分數</span><span id="score">0</span><span class="combo" id="combo" hidden></span></div>
+          <div class="scorebox"><span class="label">分數</span><span id="score">0</span><span class="combo" id="combo" hidden></span><span class="combo wind" id="wind" hidden></span></div>
           <button type="button" id="pause" aria-pressed="false" title="暫停 (P 或空白鍵)">
             <svg viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></svg><span>暫停</span></button>
         </div>
@@ -471,6 +535,10 @@ tbody tr.me{background:var(--gold)}
           <svg class="ship" id="ship" aria-hidden="true"><use href="#boat"/></svg>
         </div>
         <div class="log-meta"><span id="barText">距離靠岸 15:00</span><span>觸礁 <b id="miss">0</b> 次</span></div>
+        <div class="duo-bar" id="duoBar" hidden>
+          <div class="duo-teams"><div class="team t0" id="team0"><span>紅隊</span><b>0</b></div><div class="team t1" id="team1"><span>藍隊</span><b>0</b></div></div>
+          <div class="turnbar"><i id="turnFill"></i></div>
+        </div>
       </div>
 
       <div id="pad" class="pad"></div>
@@ -520,19 +588,32 @@ tbody tr.me{background:var(--gold)}
   </div>
   <div class="sheet home-card">
     <div>
-      <label class="field-label" for="nameInput">船長名字</label>
+      <span class="field-label">選擇玩法</span>
+      <div class="modes" id="modes" role="radiogroup" aria-label="玩法">
+        <button type="button" class="mode" role="radio" data-mode="solo"><b>單人航行</b><span>自己解一題</span></button>
+        <button type="button" class="mode" role="radio" data-mode="daily"><b>今日挑戰</b><span>全班同一題</span></button>
+        <button type="button" class="mode" role="radio" data-mode="duo"><b>雙人對戰</b><span>兩隊輪流搶分</span></button>
+        <button type="button" class="mode" role="radio" data-mode="symbol"><b>圖案數獨</b><span>圖案代替數字</span></button>
+        <button type="button" class="mode" role="radio" data-mode="boss"><b>海龍 Boss</b><span id="bossHint">對角線也不能重複</span></button>
+      </div>
+      <p class="mode-note" id="modeNote"></p>
+    </div>
+
+    <div>
+      <label class="field-label" for="nameInput" id="nameLabel">船長名字</label>
       <div class="name-row">
         <input id="nameInput" type="text" maxlength="10" placeholder="例如：5年3班 小明" autocomplete="off">
+        <input id="nameInput2" type="text" maxlength="10" placeholder="藍隊名字" autocomplete="off" hidden>
       </div>
       <div class="chips" id="chips"></div>
     </div>
 
-    <div>
+    <div id="lvBlock">
       <span class="field-label">選擇海域</span>
       <div class="lv-cards" role="radiogroup" aria-label="難度" id="lvCards">
-        <button type="button" class="lv" role="radio" data-level="warm"><b>新手港</b><span>6×6・約 3 分鐘</span><span>通關獎勵 100 分</span></button>
-        <button type="button" class="lv" role="radio" data-level="normal"><b>冒險海域</b><span>9×9・約 8 分鐘</span><span>通關獎勵 300 分</span></button>
-        <button type="button" class="lv" role="radio" data-level="hard"><b>風暴海域</b><span>9×9・約 15 分鐘</span><span>通關獎勵 500 分</span></button>
+        <button type="button" class="lv" role="radio" data-level="warm"><b>新手港</b><span>6×6・約 3 分鐘</span></button>
+        <button type="button" class="lv" role="radio" data-level="normal"><b>冒險海域</b><span>9×9・約 8 分鐘</span></button>
+        <button type="button" class="lv" role="radio" data-level="hard"><b>風暴海域</b><span>9×9・約 15 分鐘</span></button>
       </div>
     </div>
 
@@ -540,6 +621,7 @@ tbody tr.me{background:var(--gold)}
       <button type="button" class="btn gold" id="sail">出航！</button>
       <button type="button" class="btn paper" id="resume" hidden>繼續上次航行</button>
       <button type="button" class="btn" id="homeRank">排行榜</button>
+      <button type="button" class="btn" id="homeAlbum">航海圖鑑</button>
     </div>
 
     <details class="rules-box">
@@ -548,13 +630,31 @@ tbody tr.me{background:var(--gold)}
       <div><span>填對一格</span><b class="plus">+10</b></div>
       <div><span>連續答對（連擊）</span><b class="plus">每格再 +2，最多 +20</b></div>
       <div><span>完成一整列／一整行／一個宮格</span><b class="plus">+30</b></div>
-      <div><span>剩餘時間獎勵</span><b class="plus">每剩 1 秒 +1</b></div>
+      <div><span>寶藏格（金色虛線）填對</span><b class="plus">+40</b></div>
+      <div><span>順風時填對</span><b class="plus">分數加倍</b></div>
+      <div><span>剩餘時間與通關獎勵</span><b class="plus">過關時加分</b></div>
       <div><span>觸礁（填錯）</span><b class="minus">第1次 −10、第2次 −20…最多 −50</b></div>
-      <div><span>魔法道具</span><b class="minus">每用一次扣 15～40</b></div>
+      <div><span>寶藏格填錯</span><b class="minus">再多扣 20</b></div>
+      <div><span>魔法道具</span><b class="minus">每用一次扣 10～40</b></div>
     </div>
     </details>
   </div>
  </div>
+</div>
+
+<!-- ===== 航海圖鑑 ===== -->
+<div id="album" class="overlay dim" hidden>
+  <div class="sheet rank-card" role="dialog" aria-labelledby="albumTitle">
+    <div class="rank-head">
+      <h2 class="title-ink" id="albumTitle">航海圖鑑</h2>
+      <button type="button" class="btn gold" id="closeAlbum">關閉</button>
+    </div>
+    <div class="rankline"><b id="alName"></b><div class="xpbar"><i id="alXp"></i></div><span id="alNext"></span></div>
+    <h3>寶物 <span class="num" id="alTcount"></span></h3>
+    <div class="al-grid" id="alTreasures"></div>
+    <h3>成就徽章 <span class="num" id="alBcount"></span></h3>
+    <div class="al-grid" id="alBadges"></div>
+  </div>
 </div>
 
 <!-- ===== 排行榜 ===== -->
@@ -563,9 +663,12 @@ tbody tr.me{background:var(--gold)}
     <div class="rank-head">
       <h2 class="title-ink" id="rankTitle">船長排行榜</h2>
       <div class="tabs" id="rankTabs">
-        <button type="button" class="btn paper" data-level="warm">新手港</button>
-        <button type="button" class="btn paper" data-level="normal">冒險海域</button>
-        <button type="button" class="btn paper" data-level="hard">風暴海域</button>
+        <button type="button" class="btn paper" data-cat="warm">新手港</button>
+        <button type="button" class="btn paper" data-cat="normal">冒險海域</button>
+        <button type="button" class="btn paper" data-cat="hard">風暴海域</button>
+        <button type="button" class="btn paper" data-cat="daily">今日挑戰</button>
+        <button type="button" class="btn paper" data-cat="symbol">圖案數獨</button>
+        <button type="button" class="btn paper" data-cat="boss">海龍 Boss</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -575,7 +678,7 @@ tbody tr.me{background:var(--gold)}
       </table>
     </div>
     <div class="rank-foot">
-      <p>紀錄存在這台電腦的瀏覽器裡，同分時用時較短的排前面。</p>
+      <p id="rankNote"></p>
       <div style="display:flex;gap:10px">
         <button type="button" class="btn" id="clearRank">清除這個海域的紀錄</button>
         <button type="button" class="btn gold" id="closeRank">關閉</button>
@@ -597,12 +700,14 @@ tbody tr.me{background:var(--gold)}
       <path d="M26 30v42M74 30v42" stroke="#FFC93C" stroke-width="5"/>
       <rect x="42" y="36" width="16" height="16" rx="3" fill="#FFC93C" stroke="#1A1830" stroke-width="3"/>
     </svg>
-    <p class="eyebrow">找到寶藏了！</p>
-    <h2 class="title-ink" id="winTitle">傳說船長</h2>
+    <p class="eyebrow" id="winEyebrow">找到寶藏了！</p>
+    <h2 class="title-ink" id="winTitle">完美航行</h2>
     <div class="stars" id="stars"></div>
-    <div class="total"><span id="wTotal">0</span> <small>分</small></div>
+    <div class="total"><span id="wTotal">0</span> <small id="wUnit">分</small></div>
     <p class="rankmsg" id="wRank"></p>
+    <div class="rewards" id="wRewards"></div>
     <dl class="breakdown" id="breakdown"></dl>
+    <p class="review" id="wReview"></p>
     <dl class="stats">
       <div><dt>航行時間</dt><dd id="wTime">00:00</dd></div>
       <div><dt>觸礁</dt><dd id="wMiss">0</dd></div>
@@ -611,6 +716,7 @@ tbody tr.me{background:var(--gold)}
     <div class="win-actions">
       <button type="button" class="btn gold" id="again">再出航一次</button>
       <button type="button" class="btn paper" id="winRank">看排行榜</button>
+      <button type="button" class="btn paper" id="winAlbum">航海圖鑑</button>
       <button type="button" class="btn" id="winHome">回港口</button>
     </div>
   </div>
@@ -621,45 +727,99 @@ tbody tr.me{background:var(--gold)}
 
 <script>
 (function(){
-const $ = s => document.querySelector(s);
-const LEVELS = {
-  warm:  {n:6, br:2, bc:3, givens:18, name:'新手港',   target:300, clear:100, timeRate:.5},
-  normal:{n:9, br:3, bc:3, givens:40, name:'冒險海域', target:720, clear:300, timeRate:1},
-  hard:  {n:9, br:3, bc:3, givens:33, name:'風暴海域', target:900, clear:500, timeRate:1.5}
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const BASE = {
+  warm:  {n:6, br:2, bc:3, givens:18, name:'新手港',   target:300, clear:100, timeRate:.5, gems:2},
+  normal:{n:9, br:3, bc:3, givens:40, name:'冒險海域', target:720, clear:300, timeRate:1,  gems:3},
+  hard:  {n:9, br:3, bc:3, givens:33, name:'風暴海域', target:900, clear:500, timeRate:1.5,gems:3}
 };
+// 排行榜分類：三個海域＋今日挑戰＋圖案數獨＋Boss
+const CATS = {...BASE,
+  daily: {...BASE.normal, name:'今日挑戰'},
+  symbol:{...BASE.warm, name:'圖案數獨', symbols:true, clear:150},
+  boss:  {n:9, br:3, bc:3, givens:36, name:'海龍 Boss', diag:true, target:900, clear:800, timeRate:2, gems:3}
+};
+const CAT_ORDER=['warm','normal','hard','daily','symbol','boss'];
+const SYM=['⚓','🐙','🦜','🗝️','💎','🐚'];
 const ITEMS = [
-  {id:'crystal',  ico:'🔮', name:'水晶球', cost:30, uses:2, tip:'揭開一格正確答案（選中的格子，沒選就隨機）'},
+  {id:'parrot',   ico:'🦜', name:'鸚鵡軍師', cost:10, uses:3, tip:'教你下一步該看哪裡，不直接給答案'},
+  {id:'crystal',  ico:'🔮', name:'水晶球',   cost:30, uses:2, tip:'揭開一格正確答案（選中的格子，沒選就隨機）'},
   {id:'compass',  ico:'🧭', name:'魔法羅盤', cost:20, uses:2, tip:'把選中格子所在宮格的「可能數字」全部寫成筆記'},
   {id:'shield',   ico:'🛡️', name:'防礁護盾', cost:15, uses:2, tip:'擋下下一次觸礁，不扣分也不算觸礁'},
   {id:'hourglass',ico:'⏳', name:'時光沙漏', cost:40, uses:1, tip:'航行時間倒退 60 秒'}
 ];
-const RECESS = 900;   // 航海時間 15 分鐘
+const TREASURES = [
+  {id:'shell', ico:'🐚', name:'貝殼號角', cat:'warm'}, {id:'key', ico:'🗝️', name:'生鏽鑰匙', cat:'warm'}, {id:'compass', ico:'🧭', name:'黃銅羅盤', cat:'warm'},
+  {id:'map', ico:'🗺️', name:'藏寶圖殘片', cat:'normal'}, {id:'scope', ico:'🔭', name:'船長望遠鏡', cat:'normal'}, {id:'gem', ico:'💎', name:'海藍寶石', cat:'normal'},
+  {id:'crown', ico:'👑', name:'海王王冠', cat:'hard'}, {id:'trident', ico:'🔱', name:'三叉戟', cat:'hard'}, {id:'grail', ico:'🏆', name:'黃金聖杯', cat:'hard'},
+  {id:'log', ico:'📜', name:'航海日誌', cat:'daily'}, {id:'parrot', ico:'🦜', name:'彩虹鸚鵡', cat:'symbol'}, {id:'scale', ico:'🐉', name:'海龍之鱗', cat:'boss'}
+];
+const BADGES = [
+  {id:'first', ico:'⛵', name:'初次出航', how:'完成第一次航行'},
+  {id:'clean', ico:'✨', name:'零觸礁', how:'一次都沒填錯就過關'},
+  {id:'swift', ico:'⚡', name:'閃電手', how:'用不到一半的標準時間過關'},
+  {id:'pure',  ico:'🧠', name:'不靠魔法', how:'完全不用魔法道具過關'},
+  {id:'combo', ico:'🔥', name:'十連擊', how:'連續答對 10 格'},
+  {id:'star',  ico:'🌟', name:'完美航行', how:'拿到三顆星'},
+  {id:'gems',  ico:'💰', name:'尋寶高手', how:'一局內找到所有寶藏格'},
+  {id:'daily', ico:'📅', name:'每日挑戰者', how:'完成今日挑戰'},
+  {id:'symbol',ico:'🎨', name:'圖案大師', how:'完成圖案數獨'},
+  {id:'boss',  ico:'🐲', name:'屠龍勇士', how:'打敗海龍 Boss'},
+  {id:'storm', ico:'🌊', name:'乘風破浪', how:'累積遇到 5 次海上事件'},
+  {id:'all',   ico:'🏴‍☠️', name:'大收藏家', how:'收集全部 12 件寶物'}
+];
+const RANKS=[[0,'見習水手'],[3000,'水手'],[8000,'舵手'],[16000,'大副'],[30000,'船長'],[50000,'傳說船長']];
+const TEAM=['紅隊','藍隊'];
+const RECESS = 900, TURN_SEC = 25;
 const store = {
   get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 };
-const GAME_KEY='sudoku-game-v2', BOARD_KEY='sudoku-leaderboard';
+const GAME_KEY='sudoku-game-v3', BOARD_KEY='sudoku-leaderboard', PROF_KEY='sudoku-profiles';
 
-let S = null, P = [], cells = [], sel = -1, noteMode = false, undoStack = [];
-let soundOn = true, lastTick = 0, saveCount = 0, homeLevel = 'normal', rankLevel = 'normal', lastEntryId = null;
+let S = null, P = [], UNITS = [], cells = [], sel = -1, noteMode = false, undoStack = [];
+let soundOn = true, lastTick = 0, saveCount = 0, homeMode='solo', homeLevel = 'normal', rankCat = 'normal', lastEntryId = null;
+let rnd = Math.random;
+
+/* ---------- 小工具 ---------- */
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function seeded(str){   // 同一天、同一個字串會產生同一題
+  let h=1779033703; for(const c of str){ h=Math.imul(h^c.charCodeAt(0),3432918353); h=h<<13|h>>>19; }
+  return function(){ h=Math.imul(h^h>>>16,2246822507); h=Math.imul(h^h>>>13,3266489909); h^=h>>>16; return (h>>>0)/4294967296; };
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=rnd()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function pc(m){ let c=0; while(m){ m&=m-1; c++; } return c; }
+function fmt(t){ t=Math.max(0,Math.floor(t)); return String(t/60|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function L(){ return CATS[S.cat]; }
+function isDuo(){ return S && S.mode==='duo'; }
+function show(v){ return L().symbols ? SYM[v-1] : v; }
 
 /* ---------- 題目產生 ---------- */
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function pc(m){ let c=0; while(m){ m&=m-1; c++; } return c; }
-function geometry(L){
-  const n=L.n, out=[];
-  for(let i=0;i<n*n;i++){
-    const r=i/n|0, c=i%n, s=new Set();
-    for(let k=0;k<n;k++){ s.add(r*n+k); s.add(k*n+c); }
-    const r0=r-r%L.br, c0=c-c%L.bc;
-    for(let a=0;a<L.br;a++) for(let b=0;b<L.bc;b++) s.add((r0+a)*n+c0+b);
-    s.delete(i); out.push([...s]);
+function buildUnits(L){
+  const n=L.n, U=[];
+  for(let r=0;r<n;r++) U.push({type:'橫列', key:'r'+r, cells:[...Array(n).keys()].map(c=>r*n+c)});
+  for(let c=0;c<n;c++) U.push({type:'直行', key:'c'+c, cells:[...Array(n).keys()].map(r=>r*n+c)});
+  for(let r0=0;r0<n;r0+=L.br) for(let c0=0;c0<n;c0+=L.bc){
+    const cs=[]; for(let a=0;a<L.br;a++) for(let b=0;b<L.bc;b++) cs.push((r0+a)*n+c0+b);
+    U.push({type:'宮格', key:'b'+r0+'-'+c0, cells:cs});
   }
-  return out;
+  if(L.diag){
+    U.push({type:'對角線', key:'d1', cells:[...Array(n).keys()].map(k=>k*n+k)});
+    U.push({type:'對角線', key:'d2', cells:[...Array(n).keys()].map(k=>k*n+(n-1-k))});
+  }
+  return U;
+}
+function geometry(L){
+  UNITS=buildUnits(L);
+  const N=L.n*L.n, sets=Array.from({length:N},()=>new Set());
+  for(const u of UNITS) for(const a of u.cells) for(const b of u.cells) if(a!==b) sets[a].add(b);
+  return sets.map(s=>[...s]);
 }
 function solveCount(g, n, limit, randomize){
-  const full=(1<<(n+1))-2; let cnt=0;
+  const full=(1<<(n+1))-2; let cnt=0, nodes=0;
   (function rec(){
+    if(++nodes>200000) { cnt=limit; return; }   // 保險：太久就當作不唯一
     let best=-1, bm=0, bcnt=99;
     for(let i=0;i<g.length;i++){
       if(g[i]) continue;
@@ -676,33 +836,47 @@ function solveCount(g, n, limit, randomize){
   })();
   return cnt;
 }
-function newState(level, player){
-  const L=LEVELS[level], n=L.n, N=n*n;
-  P=geometry(L);
-  const sol=Array(N).fill(0); solveCount(sol,n,1,true);
+function newState(mode, level, p1, p2){
+  const cat=(mode==='solo'||mode==='duo')?level:mode, C=CATS[cat], n=C.n, N=n*n;
+  rnd = mode==='daily' ? seeded('daily-'+today()) : Math.random;
+  P=geometry(C);
+  let sol;
+  for(let tries=0;tries<20;tries++){ sol=Array(N).fill(0); solveCount(sol,n,1,true); if(sol.every(v=>v)) break; }
   const puz=sol.slice(); let filled=N;
   for(const i of shuffle([...Array(Math.ceil(N/2)).keys()])){
     const j=N-1-i, need=i===j?1:2;
-    if(filled-need<L.givens) continue;
+    if(filled-need<C.givens) continue;
     const a=puz[i], b=puz[j]; puz[i]=0; puz[j]=0;
     if(solveCount(puz.slice(),n,2,false)!==1){ puz[i]=a; puz[j]=b; } else filled-=need;
   }
+  const gems=shuffle(puz.map((v,i)=>v?-1:i).filter(i=>i>=0)).slice(0,C.gems);
+  rnd=Math.random;
   const items={}; ITEMS.forEach(it=>items[it.id]=it.uses);
-  return {level, player, sol, given:puz.map(v=>v>0), hinted:Array(N).fill(false), scored:Array(N).fill(false),
-          cur:puz.slice(), notes:Array(N).fill(0), magicNotes:Array(N).fill(false), units:[],
+  return {mode, cat, level, player:p1, player2:p2||'', day:today(), sol, given:puz.map(v=>v>0), hinted:Array(N).fill(false), scored:Array(N).fill(false),
+          owner:Array(N).fill(-1), cur:puz.slice(), notes:Array(N).fill(0), magicNotes:Array(N).fill(false), units:[],
           mistakes:0, elapsed:0, done:false, moves:0, paused:false,
-          score:0, combo:0, items, itemsUsed:0, shield:false, ink:[],
-          tally:{cells:0, combo:0, units:0, penalty:0, magic:0, time:0, clear:0}};
+          score:0, combo:0, maxCombo:0, items, itemsUsed:0, shield:false, ink:[],
+          gems, gemsTotal:gems.length, gemsFound:0, blots:[], windUntil:0, nextEvent:40+Math.random()*30, events:0, tip:[],
+          lastT:0, longGap:{t:0,i:-1}, missBy:{},
+          turn:0, scores:[0,0], turnLeft:TURN_SEC,
+          tally:{cells:0, combo:0, units:0, wind:0, gems:0, events:0, penalty:0, magic:0, time:0, clear:0, dup:0}};
 }
+
+/* ---------- 玩家檔案：經驗值、寶物、徽章 ---------- */
+function profiles(){ const p=store.get(PROF_KEY); return (p && typeof p==='object') ? p : {}; }
+function prof(name){ const p=profiles()[name]; return Object.assign({xp:0,tre:[],bad:[],events:0,wins:0}, p||{}); }
+function saveProf(name, pr){ const all=profiles(); all[name]=pr; store.set(PROF_KEY, all); }
+function rankOf(xp){ let k=0; RANKS.forEach((r,i)=>{ if(xp>=r[0]) k=i; }); return k; }
+function bossOpen(){ return store.get('sudoku-boss-open')===true || loadBoard().some(e=>e.cat==='hard'); }
 
 /* ---------- 畫面 ---------- */
 const board=$('#board'), pad=$('#pad'), map=$('#map');
-function L(){ return LEVELS[S.level]; }
 function build(){
-  const {n,br,bc}=L();
-  P=geometry(L());
+  const C=L(), {n,br,bc}=C;
+  P=geometry(C);
   board.style.setProperty('--n',n); board.style.setProperty('--bc',bc);
   pad.style.setProperty('--n',n);
+  board.classList.toggle('sym', !!C.symbols); pad.classList.toggle('sym', !!C.symbols);
   board.innerHTML=''; cells=[];
   for(let i=0;i<n*n;i++){
     const r=i/n|0, c=i%n, el=document.createElement('button');
@@ -711,36 +885,49 @@ function build(){
     if(c%bc===bc-1 && c<n-1) el.classList.add('br');
     if(r%br===br-1 && r<n-1) el.classList.add('bb');
     if(((r/br|0)+(c/bc|0))%2) el.classList.add('alt');
+    if(C.diag && (r===c || r+c===n-1)) el.classList.add('dg');
     el.innerHTML='<span class="v"></span><span class="notes">'+'<i></i>'.repeat(n)+'</span>';
-    [...el.querySelectorAll('.notes i')].forEach((x,k)=>x.textContent=k+1);
+    [...el.querySelectorAll('.notes i')].forEach((x,k)=>x.textContent=show(k+1));
     board.appendChild(el); cells.push(el);
   }
   pad.innerHTML='';
   for(let v=1;v<=n;v++){
     const b=document.createElement('button'); b.type='button'; b.dataset.v=v;
-    b.innerHTML=v+'<small></small>'; pad.appendChild(b);
+    b.innerHTML=show(v)+'<small></small>'; pad.appendChild(b);
   }
   $('#items').innerHTML=ITEMS.map(it=>`<button type="button" class="item" data-item="${it.id}" title="${it.tip}">
     <span class="left num"></span><span class="ico" aria-hidden="true">${it.ico}</span><span class="nm">${it.name}</span><span class="cost">−${it.cost}分</span></button>`).join('');
-  $('#captainTag').textContent=`船長 ${S.player}・${L().name}`;
+  document.body.classList.toggle('duo', isDuo());
+  $('#duoBar').hidden=!isDuo();
+  if(isDuo()){
+    $('#captainTag').textContent=`${S.player} 對 ${S.player2}・${C.name}`;
+    $('#team0 span').textContent='紅隊 '+S.player; $('#team1 span').textContent='藍隊 '+S.player2;
+  } else {
+    $('#captainTag').textContent=`${RANKS[rankOf(prof(S.player).xp)][1]} ${S.player}・${C.name}`;
+  }
   if(!Array.isArray(S.ink)) S.ink=[];
   requestAnimationFrame(sizeInk);
   render(); tickView();
 }
 function render(){
   const n=L().n, sv=sel>=0?S.cur[sel]:0, peers=new Set(sel>=0?P[sel]:[]);
+  const blot=new Set(S.blots.map(b=>b.i)), tip=new Set(S.tip);
   cells.forEach((el,i)=>{
     const v=S.cur[i];
-    el.querySelector('.v').textContent=v||'';
+    el.querySelector('.v').textContent=v?show(v):'';
     const nb=el.querySelector('.notes'), ns=nb.children;
     nb.classList.toggle('magic', S.magicNotes[i]);
     for(let k=0;k<n;k++) ns[k].classList.toggle('on', !v && !!(S.notes[i]>>(k+1)&1));
     el.classList.toggle('user', !S.given[i] && !!v);
     el.classList.toggle('hinted', S.hinted[i]);
+    el.classList.toggle('t0', S.owner[i]===0); el.classList.toggle('t1', S.owner[i]===1);
     el.classList.toggle('wrong', !!v && v!==S.sol[i]);
     el.classList.toggle('sel', i===sel);
     el.classList.toggle('peer', peers.has(i));
     el.classList.toggle('same', !!sv && v===sv && i!==sel);
+    el.classList.toggle('gem', S.gems.includes(i));
+    el.classList.toggle('blot', blot.has(i));
+    el.classList.toggle('tip', tip.has(i));
   });
   const count=Array(n+1).fill(0);
   S.cur.forEach((v,i)=>{ if(v && v===S.sol[i]) count[v]++; });
@@ -755,7 +942,7 @@ function render(){
   $('#score').textContent=S.score;
   const cb=$('#combo'); cb.hidden=S.combo<2; cb.textContent=S.combo+' 連擊';
   $('#undo').disabled=!undoStack.length || S.done;
-  document.querySelectorAll('.item').forEach(b=>{
+  $$('.item').forEach(b=>{
     const it=ITEMS.find(x=>x.id===b.dataset.item), left=S.items[it.id];
     b.querySelector('.left').textContent=left;
     b.disabled = S.done || left<=0;
@@ -766,6 +953,10 @@ function render(){
   $('#draw').setAttribute('aria-pressed', drawMode);
   $('#penbar').hidden=!drawMode; $('#itemBox').hidden=drawMode;
   $('#undo').disabled = S.done || (drawMode ? !S.ink.length : !undoStack.length);
+  if(isDuo()){
+    $('#team0 b').textContent=S.scores[0]; $('#team1 b').textContent=S.scores[1];
+    $('#team0').classList.toggle('on', S.turn===0 && !S.done); $('#team1').classList.toggle('on', S.turn===1 && !S.done);
+  }
   const p=$('#pause');
   $('#cover').hidden=!S.paused;
   p.disabled=S.done;
@@ -773,20 +964,24 @@ function render(){
   p.querySelector('span').textContent=S.paused?'起錨':'暫停';
   p.querySelector('svg').innerHTML=S.paused?'<path d="M7 4l13 8-13 8z"/>':'<path d="M9 5v14M15 5v14"/>';
 }
-function fmt(t){ t=Math.max(0,Math.floor(t)); return String(t/60|0).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
 function tickView(){
   $('#time').textContent=fmt(S.elapsed);
   const left=RECESS-S.elapsed, pct=Math.min(1,S.elapsed/RECESS)*100;
   $('#routeFill').style.width=pct+'%';
   $('#ship').style.left=pct+'%';
   $('#route').classList.toggle('late', left<120);
-  $('#barText').textContent = S.paused ? '拋錨中，時間暫停' : left>0 ? '距離靠岸 '+fmt(left) : '延長航行！加油';
+  $('#barText').textContent = S.paused ? '拋錨中，時間暫停'
+    : isDuo() ? `輪到${TEAM[S.turn]}，剩 ${Math.ceil(S.turnLeft)} 秒`
+    : left>0 ? '距離靠岸 '+fmt(left) : '延長航行！加油';
+  const w=$('#wind'), wl=S.windUntil-S.elapsed;
+  w.hidden=!(wl>0); if(wl>0) w.textContent='順風×2 '+Math.ceil(wl)+'秒';
+  if(isDuo()) $('#turnFill').style.width=Math.max(0,S.turnLeft/TURN_SEC*100)+'%';
 }
 
 /* ---------- 分數 ---------- */
+function bumpScore(){ const s=$('#score'); s.textContent=S.score; s.classList.remove('bump'); void s.offsetWidth; s.classList.add('bump'); }
 function addScore(pts, i, cls){
-  S.score=Math.max(0,S.score+pts);
-  const s=$('#score'); s.textContent=S.score; s.classList.remove('bump'); void s.offsetWidth; s.classList.add('bump');
+  S.score=Math.max(0,S.score+pts); bumpScore();
   if(i!=null) floatAt(i, (pts>0?'+':'−')+Math.abs(pts), cls);
 }
 function floatAt(i, text, cls){
@@ -811,6 +1006,7 @@ function beep(f, d=.09, type='triangle', vol=.07, delay=0){
   }catch(e){}
 }
 function magicSound(){ [880,1175,1397,1760].forEach((f,k)=>beep(f,.1,'sine',.05,k*.06)); }
+function shakeCell(i){ const el=cells[i]; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
 
 /* ---------- 操作 ---------- */
 function togglePause(){
@@ -823,60 +1019,79 @@ function togglePause(){
 function blocked(){ if(S.paused){ toast('船正在拋錨休息，先按「起錨」繼續'); return true; } return S.done; }
 function select(i){ if(S.paused) return; sel=i; beep(520,.04,'sine',.03); render(); }
 function pushUndo(i){ undoStack.push({i, v:S.cur[i], notes:S.notes.slice(), magicNotes:S.magicNotes.slice(), hinted:S.hinted[i]}); if(undoStack.length>200) undoStack.shift(); }
-function unitsOf(i){
-  const {n,br,bc}=L(), r=i/n|0, c=i%n, row=[], col=[], box=[];
-  for(let k=0;k<n;k++){ row.push(r*n+k); col.push(k*n+c); }
-  const r0=r-r%br, c0=c-c%bc;
-  for(let a=0;a<br;a++) for(let b=0;b<bc;b++) box.push((r0+a)*n+c0+b);
-  return [['r'+r,row],['c'+c,col],['b'+r0+'-'+c0,box]];
-}
+function unitsOf(i){ return UNITS.filter(u=>u.cells.includes(i)); }
+// 檢查剛填的格子有沒有完成整列／行／宮，回傳加分
 function checkUnits(i){
   let bonus=0;
-  for(const [key,u] of unitsOf(i)){
-    if(u.every(k=>S.cur[k]===S.sol[k])){
-      u.forEach((k,idx)=>{ const el=cells[k]; el.classList.remove('pop'); void el.offsetWidth; el.style.animationDelay=(idx*35)+'ms'; el.classList.add('pop'); });
-      if(!S.units.includes(key)){ S.units.push(key); bonus+=30; }
+  for(const u of unitsOf(i)){
+    if(u.cells.every(k=>S.cur[k]===S.sol[k])){
+      u.cells.forEach((k,idx)=>{ const el=cells[k]; el.classList.remove('pop'); void el.offsetWidth; el.style.animationDelay=(idx*35)+'ms'; el.classList.add('pop'); });
+      if(!S.units.includes(u.key)){ S.units.push(u.key); bonus+=30; }
     }
   }
-  if(bonus){
-    S.tally.units+=bonus; S.score+=bonus;   // 立刻入帳，飄字晚一點出現
-    setTimeout(()=>{ addScore(0, null); floatAt(i, "+"+bonus, "big"); beep(660,.1,'triangle',.06); beep(880,.14,'triangle',.06,.09); }, 250);
-  }
+  if(bonus) setTimeout(()=>{ floatAt(i, '+'+bonus, 'big'); beep(660,.1,'triangle',.06); beep(880,.14,'triangle',.06,.09); }, 250);
+  return bonus;
+}
+function clearNotesAround(i, v){ for(const p of P[i]) S.notes[p]&=~(1<<v); S.notes[i]=0; S.magicNotes[i]=false; }
+function takeGem(i){   // 回傳寶藏加分
+  const k=S.gems.indexOf(i); if(k<0) return 0;
+  S.gems.splice(k,1); S.gemsFound++;
+  setTimeout(()=>floatAt(i,'寶藏 +40','magic'),120); magicSound();
+  return 40;
 }
 function placeCorrect(i, v, byMagic){
-  for(const p of P[i]) S.notes[p]&=~(1<<v);
-  S.notes[i]=0; S.magicNotes[i]=false;
+  clearNotesAround(i, v);
   if(!byMagic && !S.scored[i]){
     S.scored[i]=true;
-    S.combo++;
+    S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo);
     const extra=Math.min(20, Math.max(0,S.combo-1)*2);
+    let pts=10+extra;
     S.tally.cells+=10; S.tally.combo+=extra;
-    addScore(10+extra, i);
+    if(S.windUntil>S.elapsed){ S.tally.wind+=pts; pts*=2; }
+    const gap=S.elapsed-S.lastT; if(gap>S.longGap.t) S.longGap={t:gap,i}; S.lastT=S.elapsed;
+    addScore(pts, i);
+    const g=takeGem(i); if(g){ S.tally.gems+=g; S.score+=g; }
   }
-  if(byMagic) S.scored[i]=true;
-  checkUnits(i);
+  if(byMagic){ S.scored[i]=true; const k=S.gems.indexOf(i); if(k>=0) S.gems.splice(k,1); }
+  const b=checkUnits(i); if(b){ S.tally.units+=b; S.score+=b; setTimeout(bumpScore,250); }
+}
+function passTurn(){ S.turn=1-S.turn; S.turnLeft=TURN_SEC; sel=-1; }
+function inputDuo(i, v){
+  const t=S.turn;
+  if(v!==S.sol[i]){
+    S.mistakes++; S.scores[t]=Math.max(0,S.scores[t]-5);
+    floatAt(i,'−5','bad'); beep(180,.18,'square',.05); shakeCell(i);
+    toast(`${TEAM[t]}填錯了，換${TEAM[1-t]}！`);
+  } else {
+    S.cur[i]=v; S.owner[i]=t; S.scored[i]=true; clearNotesAround(i,v);
+    let pts=10; const g=takeGem(i); pts+=g; pts+=checkUnits(i);
+    S.scores[t]+=pts; floatAt(i,'+10'); beep(620,.07);
+  }
+  S.moves++; passTurn();
 }
 function input(v){
   if(blocked()) return;
   if(sel<0){ toast('先點一個格子，再按數字'); return; }
-  if(S.given[sel] || S.hinted[sel]){ toast('這格已經確定了，不能改'); return; }
-  const i=sel;
+  if(S.given[sel] || S.hinted[sel] || S.owner[sel]>=0){ toast('這格已經確定了，不能改'); return; }
+  const i=sel; S.tip=[];
   if(noteMode && !S.cur[i]){
     pushUndo(i); S.notes[i]^=1<<v; S.magicNotes[i]=false; S.moves++; beep(740,.04,'sine',.03);
+  } else if(isDuo()){
+    inputDuo(i, v);
   } else if(S.cur[i]===v){
     pushUndo(i); S.cur[i]=0; S.moves++;
   } else if(v!==S.sol[i] && S.shield){
     S.shield=false; S.moves++; S.combo=0;
-    floatAt(i,'護盾擋住了！','magic'); toast('防礁護盾擋下了暗礁，不扣分！'); magicSound();
-    const el=cells[i]; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+    floatAt(i,'護盾擋住了！','magic'); toast('防礁護盾擋下了暗礁，不扣分！'); magicSound(); shakeCell(i);
   } else {
     pushUndo(i); S.cur[i]=v; S.moves++;
     if(v!==S.sol[i]){
-      S.mistakes++; S.combo=0;
-      const pen=penaltyFor(S.mistakes); S.tally.penalty+=pen;
-      addScore(-pen, i, 'bad'); beep(180,.18,'square',.05);
-      const el=cells[i]; el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
-      if(S.mistakes===3) toast('觸礁越多扣越多，下一次會扣 '+penaltyFor(4)+' 分，小心駕駛！');
+      S.mistakes++; S.combo=0; S.missBy[v]=(S.missBy[v]||0)+1;
+      let pen=penaltyFor(S.mistakes); if(S.gems.includes(i)) pen+=20;
+      S.tally.penalty+=pen;
+      addScore(-pen, i, 'bad'); beep(180,.18,'square',.05); shakeCell(i);
+      if(S.gems.includes(i)) toast('寶藏格填錯會多扣 20 分，想清楚再填！');
+      else if(S.mistakes===3) toast('觸礁越多扣越多，下一次會扣 '+penaltyFor(4)+' 分，小心駕駛！');
     } else {
       beep(620,.07);
       placeCorrect(i, v, false);
@@ -885,25 +1100,48 @@ function input(v){
   render(); save(); checkWin();
 }
 function erase(){
-  if(blocked() || sel<0 || S.given[sel] || S.hinted[sel]) return;
+  if(blocked() || sel<0 || S.given[sel] || S.hinted[sel] || S.owner[sel]>=0) return;
   if(!S.cur[sel] && !S.notes[sel]) return;
   pushUndo(sel); S.cur[sel]=0; S.notes[sel]=0; S.magicNotes[sel]=false; S.moves++; render(); save();
 }
 function undo(){
   if(blocked()) return;
-  if(drawMode){ if(S.ink.length){ S.ink.pop(); redrawInk(); save(); } return; }
+  if(drawMode){ if(S.ink.length){ S.ink.pop(); redrawInk(); save(); render(); } return; }
+  if(isDuo()){ toast('對戰中不能復原喔'); return; }
   const u=undoStack.pop(); if(!u) return;
   S.cur[u.i]=u.v; S.notes=u.notes; S.magicNotes=u.magicNotes; S.hinted[u.i]=u.hinted; sel=u.i; render(); save();
 }
 
 /* ---------- 魔法道具 ---------- */
+function candMask(k){   // 依目前「填對的數字」算出這格還能放什麼
+  const n=L().n, full=(1<<(n+1))-2; let used=0;
+  for(const p of P[k]){ const v=S.cur[p]; if(v && v===S.sol[p]) used|=1<<v; }
+  return full&~used;
+}
+function parrotTip(){   // 教推理：先找「某數字在某列只剩一個位置」，再找「某格只剩一個數字」
+  const n=L().n, open=k=>S.cur[k]!==S.sol[k];
+  for(const u of UNITS){
+    for(let d=1;d<=n;d++){
+      if(u.cells.some(k=>S.cur[k]===d && S.sol[k]===d)) continue;
+      const spots=u.cells.filter(k=>open(k) && (candMask(k)>>d&1));
+      if(spots.length===1) return {cells:u.cells.filter(open), msg:`鸚鵡說：發亮的這一${u.type}裡，${show(d)} 只剩一個位置能放，找找看！`};
+    }
+  }
+  for(let k=0;k<n*n;k++) if(open(k) && pc(candMask(k))===1)
+    return {cells:[k], msg:`鸚鵡說：看發亮的這一格，它的列、行、宮已經出現 ${n-1} 種，只剩一種能放！`};
+  return null;
+}
 function useItem(id){
   if(blocked()) return;
   const it=ITEMS.find(x=>x.id===id);
   if(S.items[id]<=0){ toast(it.name+'已經用完了'); return; }
   if(S.score<it.cost){ toast(`分數不夠！${it.name}要 ${it.cost} 分，先解幾格賺分數吧`); beep(200,.15,'square',.04); return; }
   let ok=false;
-  if(id==='crystal'){
+  if(id==='parrot'){
+    const t=parrotTip();
+    if(!t){ toast('鸚鵡也看不出來，這裡需要進階推理，試試魔法羅盤'); return; }
+    S.tip=t.cells; toast(t.msg, 6000); ok=true;
+  } else if(id==='crystal'){
     let i=(sel>=0 && !S.given[sel] && S.cur[sel]!==S.sol[sel]) ? sel : -1;
     if(i<0){ const c=S.cur.map((v,k)=>k).filter(k=>S.cur[k]!==S.sol[k]); if(c.length) i=c[Math.random()*c.length|0]; }
     if(i>=0){
@@ -913,20 +1151,16 @@ function useItem(id){
     }
   } else if(id==='compass'){
     if(sel<0){ toast('先點一個格子，羅盤才知道要照亮哪個宮格'); return; }
-    const box=unitsOf(sel)[2][1], n=L().n, full=(1<<(n+1))-2;
+    const box=unitsOf(sel).find(u=>u.type==='宮格').cells;
     let filledAny=false;
-    for(const k of box){
-      if(S.cur[k]) continue;
-      let used=0; for(const p of P[k]){ const v=S.cur[p]; if(v && v===S.sol[p]) used|=1<<v; }
-      S.notes[k]=full&~used; S.magicNotes[k]=true; filledAny=true;
-    }
+    for(const k of box){ if(S.cur[k]) continue; S.notes[k]=candMask(k); S.magicNotes[k]=true; filledAny=true; }
     if(!filledAny){ toast('這個宮格已經填滿了，換一個宮格吧'); return; }
     ok=true; toast('羅盤把這個宮格可能的數字都寫上筆記了');
   } else if(id==='shield'){
     if(S.shield){ toast('護盾已經開著了'); return; }
     S.shield=true; ok=true; toast('護盾啟動！下一次填錯不會觸礁');
   } else if(id==='hourglass'){
-    S.elapsed=Math.max(0,S.elapsed-60); ok=true; toast('時光倒流 60 秒！'); tickView();
+    S.elapsed=Math.max(0,S.elapsed-60); S.lastT=Math.min(S.lastT,S.elapsed); ok=true; toast('時光倒流 60 秒！'); tickView();
   }
   if(!ok) return;
   S.items[id]--; S.itemsUsed++; S.moves++;
@@ -934,62 +1168,140 @@ function useItem(id){
   magicSound(); render(); save(); checkWin();
 }
 
+/* ---------- 突發海上事件 ---------- */
+let eventT;
+function banner(text){ const e=$('#event'); e.textContent=text; e.classList.add('show'); clearTimeout(eventT); eventT=setTimeout(()=>e.classList.remove('show'),4500); }
+function fireEvent(){
+  S.events++; S.nextEvent=S.elapsed+55+Math.random()*40;
+  const kinds=['wind','bottle','kraken','gull'], kind=kinds[Math.random()*kinds.length|0];
+  if(kind==='wind'){ S.windUntil=S.elapsed+25; banner('💨 順風來了！25 秒內填對，分數加倍'); }
+  else if(kind==='bottle'){
+    const it=ITEMS[Math.random()*ITEMS.length|0]; S.items[it.id]++;
+    banner(`🍾 撿到漂流瓶！多了一次「${it.name}」`);
+  } else if(kind==='kraken'){
+    const pool=shuffle(S.cur.map((v,k)=>k).filter(k=>S.cur[k] && S.cur[k]===S.sol[k])).slice(0,4);
+    S.blots=pool.map(i=>({i, until:S.elapsed+12}));
+    banner('🐙 海怪噴墨！幾個數字被遮住 12 秒');
+  } else { S.tally.events+=20; addScore(20,null); banner('🕊️ 海鷗送來金幣，+20 分'); }
+  magicSound(); render(); save();
+}
+
 /* ---------- 排行榜 ---------- */
-function loadBoard(){ const b=store.get(BOARD_KEY); return Array.isArray(b)?b:[]; }
-function sortedFor(level){ return loadBoard().filter(e=>e.level===level).sort((a,b)=>b.score-a.score || a.time-b.time); }
-function esc(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function loadBoard(){ const b=store.get(BOARD_KEY); return (Array.isArray(b)?b:[]).map(e=>e.cat?e:Object.assign(e,{cat:e.level})); }
+function sortedFor(cat){
+  return loadBoard().filter(e=>e.cat===cat && (cat!=='daily' || e.day===today())).sort((a,b)=>b.score-a.score || a.time-b.time);
+}
 function renderRank(){
-  document.querySelectorAll('#rankTabs .btn').forEach(b=>b.setAttribute('aria-selected', b.dataset.level===rankLevel));
-  const list=sortedFor(rankLevel).slice(0,20), body=$('#rankBody');
-  if(!list.length){ body.innerHTML=`<tr><td colspan="7" class="empty">${LEVELS[rankLevel].name}還沒有船長上榜，快去搶第一名！</td></tr>`; return; }
+  $$('#rankTabs .btn').forEach(b=>b.setAttribute('aria-selected', b.dataset.cat===rankCat));
+  const list=sortedFor(rankCat).slice(0,20), body=$('#rankBody');
+  $('#rankNote').textContent = rankCat==='daily' ? `今天（${today()}）全班同一題，只比今天的成績。` : '紀錄存在這台電腦的瀏覽器裡，同分時用時較短的排前面。';
+  if(!list.length){ body.innerHTML=`<tr><td colspan="7" class="empty">${CATS[rankCat].name}還沒有船長上榜，快去搶第一名！</td></tr>`; return; }
   body.innerHTML=list.map((e,k)=>`<tr class="${e.id===lastEntryId?'me':''}">
     <td>${k<3?`<span class="medal m${k+1}">${k+1}</span>`:k+1}</td>
     <td class="name">${esc(e.name)}</td><td class="sc">${e.score}</td>
     <td class="num">${fmt(e.time)}</td><td class="num">${e.mistakes}</td><td class="num">${e.items}</td>
     <td class="num">${e.date}</td></tr>`).join('');
 }
-function openRank(level){
-  rankLevel=level||(S?S.level:homeLevel); renderRank(); $('#rank').hidden=false;
-  if(S && !S.done && !S.paused && $('#home').hidden){ S.paused=true; render(); tickView(); save(); }
+function pauseForOverlay(){ if(S && !S.demo && !S.done && !S.paused && $('#home').hidden){ S.paused=true; render(); tickView(); save(); } }
+function openRank(cat){
+  rankCat=cat||(S && !S.demo && !isDuo() ? S.cat : homeMode==='solo'||homeMode==='duo' ? homeLevel : homeMode);
+  renderRank(); $('#rank').hidden=false; pauseForOverlay();
+}
+
+/* ---------- 航海圖鑑 ---------- */
+function openAlbum(name){
+  name=(name||'').trim();
+  if(!name){ toast('先寫上船長名字，才能看他的圖鑑'); return; }
+  const pr=prof(name), k=rankOf(pr.xp), next=RANKS[k+1];
+  $('#alName').textContent=`${RANKS[k][1]} ${name}`;
+  $('#alXp').style.width=(next ? (pr.xp-RANKS[k][0])/(next[0]-RANKS[k][0])*100 : 100)+'%';
+  $('#alNext').textContent = next ? `累積 ${pr.xp} 分，再 ${next[0]-pr.xp} 分升級「${next[1]}」` : `累積 ${pr.xp} 分，已經是最高階！`;
+  $('#alTcount').textContent=`${pr.tre.length}／${TREASURES.length}`;
+  $('#alTreasures').innerHTML=TREASURES.map(t=>{ const has=pr.tre.includes(t.id);
+    return `<div class="al ${has?'':'off'}"><span class="ico">${has?t.ico:'❔'}</span><b>${has?t.name:'？？？'}</b><small>${CATS[t.cat].name}</small></div>`; }).join('');
+  $('#alBcount').textContent=`${pr.bad.length}／${BADGES.length}`;
+  $('#alBadges').innerHTML=BADGES.map(b=>{ const has=pr.bad.includes(b.id);
+    return `<div class="al ${has?'':'off'}"><span class="ico">${b.ico}</span><b>${b.name}</b><small>${b.how}</small></div>`; }).join('');
+  $('#album').hidden=false; pauseForOverlay();
 }
 
 /* ---------- 過關 ---------- */
 function starSVG(on){ return `<svg viewBox="0 0 50 50" class="${on?'on':''}"><path d="M25 3l6.6 14.2 15.4 1.9-11.4 10.6 3 15.3L25 37.4 11.4 45l3-15.3L3 19.1l15.4-1.9z"/></svg>`; }
+function showWin(){ $('#win').hidden=false; confetti(); [523,659,784,1047].forEach((f,k)=>beep(f,.18,'triangle',.07,k*.12)); }
+function winDuo(){
+  const [a,b]=S.scores, w=a===b?-1:a>b?0:1;
+  $('#winEyebrow').textContent='對戰結束！';
+  $('#winTitle').textContent = w<0 ? '平手！' : `${TEAM[w]}獲勝！`;
+  $('#stars').innerHTML='';
+  $('#wTotal').textContent=`${a} : ${b}`; $('#wUnit').textContent='';
+  $('#wRank').textContent=`紅隊 ${S.player}　對　藍隊 ${S.player2}`;
+  $('#breakdown').hidden=true; $('#wRewards').innerHTML=''; $('#wReview').textContent='雙人對戰不列入排行榜，再來一局分個高下吧！';
+  $('#wTime').textContent=fmt(S.elapsed); $('#wMiss').textContent=S.mistakes; $('#wItems').textContent='—';
+  setTimeout(showWin,500);
+}
 function checkWin(){
   if(S.done || !S.cur.every((v,i)=>v===S.sol[i])) return;
-  S.done=true; S.paused=false; S.shield=false;
-  const timeBonus=Math.round(Math.max(0,RECESS-S.elapsed)*L().timeRate);
-  S.tally.time=timeBonus; S.tally.clear=L().clear;
-  S.score+=timeBonus+L().clear;
+  S.done=true; S.paused=false; S.shield=false; S.blots=[]; S.tip=[];
+  if(isDuo()){ save(); render(); winDuo(); return; }
+  const C=L(), timeBonus=Math.round(Math.max(0,RECESS-S.elapsed)*C.timeRate);
+  S.tally.time=timeBonus; S.tally.clear=C.clear;
+  S.score+=timeBonus+C.clear;
   let stars=3;
-  if(S.elapsed>L().target) stars--;
+  if(S.elapsed>C.target) stars--;
   if(S.mistakes>3) stars--;
   if(S.itemsUsed>=3) stars--;
   stars=Math.max(1,stars);
-  // 寫入排行榜
-  const entry={id:Date.now()+'-'+Math.random().toString(36).slice(2,6), name:S.player, level:S.level, score:S.score,
-    time:Math.floor(S.elapsed), mistakes:S.mistakes, items:S.itemsUsed, stars,
+
+  // 玩家檔案：寶物、徽章、經驗值
+  const pr=prof(S.player), oldRank=rankOf(pr.xp), rewards=[];
+  const pool=TREASURES.filter(t=>t.cat===S.cat && !pr.tre.includes(t.id));
+  if(pool.length){ const t=pool[Math.random()*pool.length|0]; pr.tre.push(t.id); rewards.push(`<span class="rw">新寶物 ${t.ico} ${t.name}</span>`); }
+  else { S.tally.dup=50; S.score+=50; rewards.push('<span class="rw">這片海域的寶物都找齊了，換成 50 分</span>'); }
+  pr.wins++; pr.events+=S.events;
+  const earn={first:true, clean:S.mistakes===0, swift:S.elapsed<=C.target/2, pure:S.itemsUsed===0, combo:S.maxCombo>=10, star:stars===3,
+    gems:S.gemsTotal>0 && S.gemsFound===S.gemsTotal, daily:S.cat==='daily', symbol:S.cat==='symbol', boss:S.cat==='boss',
+    storm:pr.events>=5, all:pr.tre.length===TREASURES.length};
+  for(const b of BADGES) if(earn[b.id] && !pr.bad.includes(b.id)){ pr.bad.push(b.id); rewards.push(`<span class="rw badge">徽章 ${b.ico} ${b.name}</span>`); }
+  pr.xp+=S.score;
+  if(rankOf(pr.xp)>oldRank) rewards.push(`<span class="rw rankup">升級為「${RANKS[rankOf(pr.xp)][1]}」！</span>`);
+  saveProf(S.player, pr);
+  if(S.cat==='hard') store.set('sudoku-boss-open', true);
+
+  // 排行榜
+  const entry={id:Date.now()+'-'+Math.random().toString(36).slice(2,6), name:S.player, cat:S.cat, score:S.score,
+    time:Math.floor(S.elapsed), mistakes:S.mistakes, items:S.itemsUsed, stars, day:today(),
     date:new Date().toLocaleDateString('zh-TW',{month:'numeric',day:'numeric'})};
   const all=loadBoard(); all.push(entry);
-  const keep=[]; for(const lv of Object.keys(LEVELS)) keep.push(...all.filter(e=>e.level===lv).sort((a,b)=>b.score-a.score||a.time-b.time).slice(0,50));
+  const keep=[]; for(const c of CAT_ORDER) keep.push(...all.filter(e=>e.cat===c).sort((a,b)=>b.score-a.score||a.time-b.time).slice(0,50));
   store.set(BOARD_KEY, keep); lastEntryId=entry.id;
-  const rank=sortedFor(S.level).findIndex(e=>e.id===entry.id)+1;
+  const rank=sortedFor(S.cat).findIndex(e=>e.id===entry.id)+1;
   save(); render();
 
-  $('#winTitle').textContent = stars===3?'傳說船長':stars===2?'王牌大副':'見習水手';
+  $('#winEyebrow').textContent = S.cat==='boss' ? '打敗海龍了！' : '找到寶藏了！';
+  $('#winTitle').textContent = stars===3?'完美航行':stars===2?'順利靠岸':'驚險過關';
   $('#stars').innerHTML=[0,1,2].map(k=>starSVG(k<stars)).join('');
-  $('#wTotal').textContent=S.score;
-  $('#wRank').textContent = rank===1 ? `${S.player}，你是${L().name}排行榜第 1 名！` : rank>0 ? `${S.player}，排行榜第 ${rank} 名` : '';
-  const t=S.tally, row=(k,v,cls)=>`<div><dt>${k}</dt><dd class="${cls}">${v}</dd></div>`;
+  $('#wTotal').textContent=S.score; $('#wUnit').textContent='分';
+  $('#wRank').textContent = rank===1 ? `${S.player}，你是${C.name}排行榜第 1 名！` : rank>0 ? `${S.player}，${C.name}排行榜第 ${rank} 名` : '';
+  const t=S.tally, row=(k,v,cls)=>v?`<div><dt>${k}</dt><dd class="${cls}">${cls==='plus'?'+':'−'}${v}</dd></div>`:'';
+  $('#breakdown').hidden=false;
   $('#breakdown').innerHTML=
-    row('填對格子',`+${t.cells}`,'plus')+row('連擊加成',`+${t.combo}`,'plus')+
-    row('完成列／行／宮',`+${t.units}`,'plus')+row('剩餘時間獎勵',`+${t.time}`,'plus')+
-    row('通關獎勵',`+${t.clear}`,'plus')+row('觸礁扣分',`−${t.penalty}`,'minus')+
-    row('魔法道具',`−${t.magic}`,'minus');
+    row('填對格子',t.cells,'plus')+row('連擊加成',t.combo,'plus')+row('完成列／行／宮',t.units,'plus')+
+    row('順風加倍',t.wind,'plus')+row('寶藏格',t.gems,'plus')+row('海上事件',t.events,'plus')+
+    row('剩餘時間獎勵',t.time,'plus')+row('通關獎勵',t.clear,'plus')+row('寶物換分',t.dup,'plus')+
+    row('觸礁扣分',t.penalty,'minus')+row('魔法道具',t.magic,'minus');
+  $('#wRewards').innerHTML=rewards.join('');
+  // 解題回顧
+  const rev=[`最高 ${S.maxCombo} 連擊`];
+  if(S.longGap.i>=0 && S.longGap.t>=8){ const n=C.n; rev.push(`想最久的是第 ${(S.longGap.i/n|0)+1} 列第 ${S.longGap.i%n+1} 行（${Math.round(S.longGap.t)} 秒）`); }
+  const worst=Object.entries(S.missBy).sort((a,b)=>b[1]-a[1])[0];
+  if(worst) rev.push(`最常填錯的是 ${show(+worst[0])}（${worst[1]} 次），下次先檢查它的列、行、宮`);
+  else rev.push('一次都沒填錯，推理很穩');
+  if(S.gemsTotal) rev.push(`寶藏格找到 ${S.gemsFound}／${S.gemsTotal}`);
+  $('#wReview').textContent='解題回顧：'+rev.join('；')+'。';
   $('#wTime').textContent=fmt(S.elapsed);
   $('#wMiss').textContent=S.mistakes;
   $('#wItems').textContent=S.itemsUsed;
-  setTimeout(()=>{ $('#win').hidden=false; confetti(); [523,659,784,1047].forEach((f,k)=>beep(f,.18,'triangle',.07,k*.12)); }, 500);
+  setTimeout(showWin,500);
 }
 
 /* ---------- 首頁 ---------- */
@@ -998,48 +1310,76 @@ function recentNames(){
   const last=store.get('sudoku-last-name'); if(last && !seen.includes(last)) seen.unshift(last);
   return seen.slice(0,8);
 }
+function syncHomeUI(){
+  $$('.mode').forEach(b=>b.setAttribute('aria-checked', b.dataset.mode===homeMode));
+  $$('.lv').forEach(b=>b.setAttribute('aria-checked', b.dataset.level===homeLevel));
+  const duo=homeMode==='duo', open=bossOpen();
+  $('#nameInput2').hidden=!duo;
+  $('#nameLabel').textContent=duo?'兩隊的名字（紅隊、藍隊）':'船長名字';
+  $('#nameInput').placeholder=duo?'紅隊名字':'例如：5年3班 小明';
+  $('#lvBlock').hidden=!(homeMode==='solo'||duo);
+  $('#bossHint').textContent=open?'對角線也不能重複':'通過風暴海域後開放';
+  $('.mode[data-mode="boss"]').classList.toggle('locked', !open);
+  $('#modeNote').textContent={
+    solo:'自己解一題，拿分數、收集寶物、衝排行榜。',
+    daily:`今天（${today()}）全班都是同一題 9×9，比誰分數高。每天換一題。`,
+    duo:'紅藍兩隊共用一個棋盤，輪流上來填一格。填對 +10 分，填錯 −5 分，每回合 25 秒。',
+    symbol:'6×6 棋盤，把數字換成船錨、章魚、鸚鵡等圖案，規則完全一樣。',
+    boss:open?'9×9 棋盤，除了列、行、宮之外，兩條對角線上的數字也不能重複。':'先在「單人航行」通過風暴海域，才能挑戰海龍。'
+  }[homeMode];
+}
 function showHome(){
-  if(S && !S.done && !S.paused){ S.paused=true; save(); }
-  $('#win').hidden=true; $('#rank').hidden=true;
+  if(S && !S.demo && !S.done && !S.paused){ S.paused=true; save(); }
+  $('#win').hidden=true; $('#rank').hidden=true; $('#album').hidden=true;
   const last=store.get('sudoku-last-name');
   if(last && !$('#nameInput').value) $('#nameInput').value=last;
   const names=recentNames();
   $('#chips').innerHTML = names.length ? '<span>最近的船長：</span>'+names.map(n=>`<button type="button" data-name="${esc(n)}">${esc(n)}</button>`).join('') : '';
   const saved=store.get(GAME_KEY);
   const r=$('#resume');
-  r.hidden=!(saved && !saved.done && LEVELS[saved.level]);
-  if(!r.hidden) r.textContent=`繼續 ${saved.player} 的航行（${LEVELS[saved.level].name}）`;
-  document.querySelectorAll('.lv').forEach(b=>b.setAttribute('aria-checked', b.dataset.level===homeLevel));
+  r.hidden=!(saved && !saved.done && CATS[saved.cat]);
+  if(!r.hidden) r.textContent=`繼續 ${saved.player} 的航行`;
+  syncHomeUI();
   $('#home').hidden=false;
 }
 function sail(){
-  const name=$('#nameInput').value.trim();
-  if(!name){ toast('先寫上船長名字才能出航喔'); $('#nameInput').focus(); beep(200,.15,'square',.04); return; }
+  const name=$('#nameInput').value.trim(), name2=$('#nameInput2').value.trim();
+  if(!name){ toast(homeMode==='duo'?'先寫上紅隊的名字':'先寫上船長名字才能出航喔'); $('#nameInput').focus(); beep(200,.15,'square',.04); return; }
+  if(homeMode==='duo' && !name2){ toast('再寫上藍隊的名字'); $('#nameInput2').focus(); beep(200,.15,'square',.04); return; }
+  if(homeMode==='boss' && !bossOpen()){ toast('先在「單人航行」通過風暴海域，才能挑戰海龍 Boss'); beep(200,.15,'square',.04); return; }
   store.set('sudoku-last-name', name);
-  startNew(homeLevel, name);
+  startNew(homeMode, homeLevel, name, name2);
   $('#home').hidden=true;
   beep(392,.1); beep(523,.1,'triangle',.07,.1); beep(659,.16,'triangle',.07,.2);
+  if(homeMode==='duo') banner(`⚔️ 紅隊 ${name} 先攻！每回合 ${TURN_SEC} 秒`);
+  else if(S.gemsTotal) banner(`✦ 棋盤上藏了 ${S.gemsTotal} 個寶藏格（金色虛線），填對多 40 分`);
 }
 
 /* ---------- 新局 / 確認 ---------- */
 let armed=null, armTimer=null;
-function inProgress(){ return S && S.moves>0 && !S.done; }
+function inProgress(){ return S && !S.demo && S.moves>0 && !S.done; }
 function guarded(key, btn, msg, fn, force){
   if((!force && !inProgress()) || armed===key){ disarm(); fn(); return; }
   disarm(); armed=key; if(btn) btn.classList.add('armed');
   toast(msg);
   armTimer=setTimeout(disarm,3000);
 }
-function disarm(){ armed=null; clearTimeout(armTimer); document.querySelectorAll('.armed').forEach(b=>b.classList.remove('armed')); }
-function startNew(level, player){
-  S=newState(level, player); sel=-1; noteMode=false; drawMode=false; undoStack=[]; $('#win').hidden=true;
+function disarm(){ armed=null; clearTimeout(armTimer); $$('.armed').forEach(b=>b.classList.remove('armed')); }
+function startNew(mode, level, p1, p2){
+  S=newState(mode, level, p1, p2); sel=-1; noteMode=false; drawMode=false; undoStack=[]; $('#win').hidden=true;
   build(); save();
 }
 
 /* ---------- 計時 / 存檔 ---------- */
 function loop(now){
-  if(lastTick && S && !S.done && !S.paused && !document.hidden && $('#home').hidden){
-    S.elapsed+=Math.min(1,(now-lastTick)/1000);
+  if(lastTick && S && !S.demo && !S.done && !S.paused && !document.hidden && $('#home').hidden){
+    const dt=Math.min(1,(now-lastTick)/1000);
+    S.elapsed+=dt;
+    if(isDuo()){
+      S.turnLeft-=dt;
+      if(S.turnLeft<=0){ toast(`${TEAM[S.turn]}時間到，換${TEAM[1-S.turn]}！`); beep(300,.15,'square',.04); passTurn(); render(); }
+    } else if(S.elapsed>=S.nextEvent) fireEvent();
+    if(S.blots.length && S.blots.some(b=>b.until<=S.elapsed)){ S.blots=S.blots.filter(b=>b.until>S.elapsed); render(); }
     tickView();
     if(++saveCount%120===0) save();
   }
@@ -1069,7 +1409,7 @@ function confetti(){
 }
 
 let toastT;
-function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2400); }
+function toast(m, ms){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),ms||2400); }
 
 /* ---------- 手寫畫筆 ---------- */
 // 筆畫座標存成 0～1 的比例，換螢幕大小也能對回同一個格子
@@ -1214,23 +1554,32 @@ $('#items').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(
 $('#erase').onclick=erase; $('#undo').onclick=undo;
 $('#pause').onclick=togglePause; $('#cover').onclick=togglePause;
 $('#note').onclick=()=>{ if(blocked()) return; noteMode=!noteMode; if(noteMode) drawMode=false; toast(noteMode?'筆記模式：把「可能的數字」小小記下來':'回到一般模式'); render(); };
-$('#newGame').onclick=e=>guarded('new',e.currentTarget,'正在航行喔！再按一次「新航線」確認換題',()=>startNew(S.level,S.player));
+$('#newGame').onclick=e=>guarded('new',e.currentTarget,'正在航行喔！再按一次「新航線」確認換題',()=>{
+  if(S.mode==='daily'){ toast('今日挑戰每天只有一題，會重新開始同一題'); }
+  startNew(S.mode,S.level,S.player,S.player2);
+});
 $('#goHome').onclick=showHome;
 $('#openRank').onclick=()=>openRank();
-$('#homeRank').onclick=()=>openRank(homeLevel);
-$('#winRank').onclick=()=>{ $('#win').hidden=true; openRank(S.level); };
+$('#homeRank').onclick=()=>openRank();
+$('#winRank').onclick=()=>{ $('#win').hidden=true; openRank(isDuo()?S.level:S.cat); };
 $('#closeRank').onclick=()=>{ $('#rank').hidden=true; disarm(); };
-$('#rankTabs').addEventListener('click',e=>{ const b=e.target.closest('.btn'); if(b){ rankLevel=b.dataset.level; renderRank(); } });
-$('#clearRank').onclick=e=>guarded('clear',e.currentTarget,`再按一次，就會清除「${LEVELS[rankLevel].name}」的所有紀錄`,()=>{
-  store.set(BOARD_KEY, loadBoard().filter(x=>x.level!==rankLevel)); renderRank(); toast('紀錄已清除');
+$('#rankTabs').addEventListener('click',e=>{ const b=e.target.closest('.btn'); if(b){ rankCat=b.dataset.cat; renderRank(); } });
+$('#clearRank').onclick=e=>guarded('clear',e.currentTarget,`再按一次，就會清除「${CATS[rankCat].name}」的所有紀錄`,()=>{
+  store.set(BOARD_KEY, loadBoard().filter(x=>x.cat!==rankCat)); renderRank(); toast('紀錄已清除');
 }, true);
-$('#again').onclick=()=>startNew(S.level,S.player);
+$('#openAlbum').onclick=()=>openAlbum(S && !S.demo ? S.player : $('#nameInput').value);
+$('#homeAlbum').onclick=()=>openAlbum($('#nameInput').value);
+$('#winAlbum').onclick=()=>{ if(isDuo()){ toast('雙人對戰沒有圖鑑，單人航行才會收集寶物'); return; } $('#win').hidden=true; openAlbum(S.player); };
+$('#closeAlbum').onclick=()=>{ $('#album').hidden=true; };
+$('#again').onclick=()=>startNew(S.mode,S.level,S.player,S.player2);
 $('#winHome').onclick=showHome;
 $('#sail').onclick=sail;
-$('#resume').onclick=()=>{ const saved=store.get(GAME_KEY); if(!saved) return; S=saved; sel=-1; undoStack=[]; build(); $('#home').hidden=true; };
-$('#lvCards').addEventListener('click',e=>{ const b=e.target.closest('.lv'); if(!b) return; homeLevel=b.dataset.level; document.querySelectorAll('.lv').forEach(x=>x.setAttribute('aria-checked', x===b)); beep(520,.04,'sine',.03); });
+$('#resume').onclick=()=>{ const saved=store.get(GAME_KEY); if(!saved || !CATS[saved.cat]) return; S=saved; sel=-1; undoStack=[]; build(); $('#home').hidden=true; };
+$('#modes').addEventListener('click',e=>{ const b=e.target.closest('.mode'); if(!b) return; homeMode=b.dataset.mode; syncHomeUI(); beep(520,.04,'sine',.03); });
+$('#lvCards').addEventListener('click',e=>{ const b=e.target.closest('.lv'); if(!b) return; homeLevel=b.dataset.level; syncHomeUI(); beep(520,.04,'sine',.03); });
 $('#chips').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ $('#nameInput').value=b.dataset.name; } });
 $('#nameInput').addEventListener('keydown',e=>{ if(e.key==='Enter') sail(); });
+$('#nameInput2').addEventListener('keydown',e=>{ if(e.key==='Enter') sail(); });
 $('#sound').onclick=e=>{ soundOn=!soundOn; e.currentTarget.textContent=soundOn?'音效開':'音效關'; e.currentTarget.setAttribute('aria-pressed',soundOn); store.set('sudoku-sound',soundOn); };
 $('#full').onclick=()=>{
   const d=document;
@@ -1239,7 +1588,7 @@ $('#full').onclick=()=>{
   if(p && p.catch) p.catch(()=>toast('這個畫面不支援全螢幕，可以按 F11')); else if(!p) toast('這個畫面不支援全螢幕，可以按 F11');
 };
 document.addEventListener('keydown',e=>{
-  if(!S || !$('#home').hidden || !$('#rank').hidden || !$('#win').hidden) return;
+  if(!S || !$('#home').hidden || !$('#rank').hidden || !$('#win').hidden || !$('#album').hidden) return;
   if(e.target.tagName==='INPUT') return;
   const n=L().n;
   if(e.key.toLowerCase()==='p' || (e.key===' ' && e.target===document.body)){ e.preventDefault(); togglePause(); return; }
@@ -1272,11 +1621,11 @@ function start(data){
   const snd=store.get('sudoku-sound'); if(snd===false){ soundOn=false; $('#sound').textContent='音效關'; $('#sound').setAttribute('aria-pressed','false'); }
   if(store.get('sudoku-music')===false){ musicOn=false; $('#music').textContent='音樂關'; $('#music').setAttribute('aria-pressed','false'); }
   const snap=data && data.S;
-  if(snap && LEVELS[snap.level] && snap.player){ S=snap; build(); $('#home').hidden=!!data.inGame; if(!data.inGame) showHome(); }
+  if(snap && CATS[snap.cat] && snap.player && snap.tally){ S=snap; build(); $('#home').hidden=!!data.inGame; if(!data.inGame) showHome(); }
   else {
     const saved=store.get(GAME_KEY);
-    if(saved && LEVELS[saved.level] && !saved.done){ S=saved; S.paused=true; homeLevel=saved.level; build(); }
-    else { S=newState('normal','船長'); S.demo=true; build(); }  // 首頁後方的示意棋盤，不存檔
+    if(saved && CATS[saved.cat] && !saved.done){ S=saved; S.paused=true; build(); }
+    else { S=newState('solo','normal','船長'); S.demo=true; build(); }  // 首頁後方的示意棋盤，不存檔
     showHome();
   }
   requestAnimationFrame(loop);
