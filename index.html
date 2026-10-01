@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
-<meta name="theme-color" content="#0C3456">
+<meta name="theme-color" content="#2FB4EE">
 <meta property="og:type" content="website">
 <meta property="og:title" content="下課數獨挑戰">
 <meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆、背景音樂與排行榜，給高年級電子白板玩。">
@@ -12,12 +12,18 @@
 <title>下課數獨挑戰</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Chiron+GoRound+TC:wght@700;900&display=swap" rel="stylesheet">
 <style>
-/* Layout: 航海動漫風 — 首頁港口（輸入船長名字、選海域）→ 左邊藏寶圖棋盤、右邊航海日誌（分數、計時、魔法道具）→ 寶箱結算與排行榜。刻意只做一種配色（海洋夜色＋羊皮紙，白板投影最清楚） */
+/* Layout: 航海動漫風（晴空大海）— 整頁是一片藍天、積雲與三層會動的海浪；首頁左邊是大標題和出航的帆船、右邊是船長登記簿；遊戲中左邊藏寶圖棋盤、右邊航海日誌。刻意只做一種明亮配色（白板投影最清楚） */
 :root{
-  --sea:#0C3456;      /* 深海 */
-  --sea2:#16598A;     /* 淺海 */
+  --sky:#2FB4EE;      /* 晴空 */
+  --sky2:#C8F1FF;     /* 海平線的亮光 */
+  --cloud:#FFFFFF;
+  --wave1:#3FA9E0;    /* 遠浪 */
+  --wave2:#1F7FC4;    /* 中浪 */
+  --wave3:#125A9C;    /* 近浪 */
+  --sea:#0C3456;      /* 深海（暫停遮罩、遮罩底色） */
+  --sea2:#16598A;
   --foam:#A6DCF2;     /* 浪花 */
   --parch:#FBEFCF;    /* 羊皮紙 */
   --parch2:#F0DCA8;   /* 交錯宮格 */
@@ -34,21 +40,17 @@
   --mint:#34C98B;
   --magic:#8A5CF6;    /* 魔法道具 */
   --muted:#7A6547;
-  --f-display:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
+  --f-display:"Chiron GoRound TC","Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
   --f-num:"Baloo 2","Arial Rounded MT Bold","Segoe UI",sans-serif;
-  color-scheme:dark;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
 body{
   margin:0;padding-inline:16px;
-  background-color:var(--sea);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40' viewBox='0 0 120 40'%3E%3Cpath d='M0 30 Q15 18 30 30 T60 30 T90 30 T120 30' fill='none' stroke='%23A6DCF2' stroke-opacity='.13' stroke-width='3'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 30% -10%,var(--sea2),transparent 65%),
-    radial-gradient(ellipse at 100% 110%,var(--sea2),transparent 55%);
-  background-size:120px 40px,100% 100%,100% 100%;
+  background:linear-gradient(var(--sky) 0%,var(--sky2) 72%,var(--wave1) 72%);
+  background-attachment:fixed;
   color:var(--ink);font-family:var(--f-display);font-weight:700;
   -webkit-user-select:none;user-select:none;
 }
@@ -68,6 +70,23 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-o
 .sheet{background:var(--parch);border:5px solid var(--ink);border-radius:22px;box-shadow:10px 10px 0 var(--ink)}
 
 .app{min-height:100%;max-width:1600px;margin:0 auto;padding-block:12px;display:flex;flex-direction:column;gap:12px}
+
+/* ---------- 場景：藍天、積雲、三層海浪（固定在最底層） ---------- */
+.scene{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.sun{position:absolute;right:7vw;top:6vh;width:13vmin;height:13vmin;border-radius:50%;background:#FFF6C2;box-shadow:0 0 0 2.2vmin rgba(255,246,194,.35),0 0 0 5vmin rgba(255,246,194,.18)}
+.cloud{position:absolute;color:var(--cloud);animation:drift 70s ease-in-out infinite alternate}
+.cloud.c1{left:4vw;top:9vh;width:26vw}
+.cloud.c2{left:52vw;top:20vh;width:18vw;animation-duration:95s;animation-direction:alternate-reverse;opacity:.92}
+.cloud.c3{left:74vw;top:44vh;width:30vw;animation-duration:120s}
+.cloud.c4{left:-6vw;top:50vh;width:34vw;animation-duration:110s;animation-direction:alternate-reverse}
+@keyframes drift{to{transform:translateX(6vw)}}
+.wave{position:absolute;left:-240px;right:-240px;bottom:0;background-repeat:repeat-x,no-repeat;background-position:0 0,0 39px;background-size:240px 40px,100% 100%;animation:roll 14s linear infinite}
+.wave.w1{top:70%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40'%3E%3Cpath d='M0 40V22Q30 4 60 22T120 22T180 22T240 22V40Z' fill='%233FA9E0'/%3E%3Cpath d='M0 22Q30 4 60 22T120 22T180 22T240 22' fill='none' stroke='%23fff' stroke-opacity='.7' stroke-width='3'/%3E%3C/svg%3E"),linear-gradient(var(--wave1),var(--wave1))}
+.wave.w2{top:80%;animation-duration:9s;animation-direction:reverse;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40'%3E%3Cpath d='M0 40V22Q30 4 60 22T120 22T180 22T240 22V40Z' fill='%231F7FC4'/%3E%3Cpath d='M0 22Q30 4 60 22T120 22T180 22T240 22' fill='none' stroke='%23fff' stroke-opacity='.8' stroke-width='3.5'/%3E%3C/svg%3E"),linear-gradient(var(--wave2),var(--wave2))}
+.wave.w3{top:90%;animation-duration:6s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40'%3E%3Cpath d='M0 40V22Q30 4 60 22T120 22T180 22T240 22V40Z' fill='%23125A9C'/%3E%3Cpath d='M0 22Q30 4 60 22T120 22T180 22T240 22' fill='none' stroke='%23fff' stroke-opacity='.9' stroke-width='4'/%3E%3C/svg%3E"),linear-gradient(var(--wave3),var(--wave3))}
+@keyframes roll{to{transform:translateX(240px)}}
+.app{position:relative;z-index:1}
+body.at-home .app{visibility:hidden}
 
 /* ---------- header ---------- */
 .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -215,16 +234,18 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-o
 
 /* ---------- overlays ---------- */
 .overlay{position:fixed;inset:0;z-index:10;overflow:auto;padding:24px 16px;display:grid;place-items:center}
-.overlay.sea{background:rgba(12,52,86,.94)}
+.overlay.sea{background:transparent}
 .overlay.dim{background:rgba(12,52,86,.86)}
 .overlay.burst{background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,201,60,.22) 0 4deg,rgba(12,52,86,.86) 4deg 12deg)}
 
-/* 首頁 */
-.home-card{width:100%;max-width:880px;padding:clamp(18px,3vw,36px);display:flex;flex-direction:column;gap:clamp(14px,2vh,22px);animation:drop .5s cubic-bezier(.2,1.4,.4,1) both}
-.home-title{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.home-title svg{width:clamp(56px,7vw,90px);height:auto;filter:drop-shadow(4px 4px 0 var(--ink))}
-.home-title h2{font-size:clamp(34px,5.6vw,72px);transform:rotate(-2deg)}
-.home-title p{margin:0;flex-basis:100%;font-size:clamp(16px,1.8vw,22px);color:var(--wood)}
+/* 首頁：左邊標題＋帆船，右邊船長登記簿 */
+.home-wrap{width:100%;max-width:1380px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,600px);gap:clamp(20px,4vw,64px);align-items:center}
+.home-hero{display:flex;flex-direction:column;align-items:flex-start;gap:clamp(10px,2vh,20px);min-width:0}
+.home-hero h2{font-size:clamp(46px,8.2vw,128px);line-height:1.06;transform:rotate(-3deg);-webkit-text-stroke:clamp(8px,1.1vw,16px) var(--ink);text-shadow:clamp(4px,.6vw,9px) clamp(4px,.6vw,9px) 0 var(--red);animation:drop .6s cubic-bezier(.2,1.4,.4,1) both}
+.home-hero p{margin:0;background:var(--ink);color:var(--parch);padding:6px 16px;border-radius:999px;font-size:clamp(15px,1.7vw,22px);transform:rotate(-3deg)}
+.galleon{width:clamp(180px,30vw,460px);height:auto;margin-top:clamp(0px,2vh,24px);align-self:center;filter:drop-shadow(8px 8px 0 rgba(26,24,48,.25));animation:sailIn 1.4s cubic-bezier(.2,.9,.3,1) both,bob 3.2s ease-in-out 1.4s infinite}
+@keyframes sailIn{from{transform:translateX(-70vw) rotate(-6deg)}to{transform:none}}
+.home-card{width:100%;padding:clamp(16px,2.4vw,30px);display:flex;flex-direction:column;gap:clamp(12px,1.8vh,20px);animation:drop .5s .15s cubic-bezier(.2,1.4,.4,1) both}
 .field-label{font-size:clamp(17px,1.8vw,22px);margin-bottom:8px;display:block}
 .name-row{display:flex;gap:12px;flex-wrap:wrap}
 #nameInput{flex:1;min-width:0;font:inherit;font-size:clamp(24px,3vw,36px);font-weight:900;padding:10px 16px;border:4px solid var(--ink);border-radius:14px;
@@ -240,9 +261,11 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-o
 .lv[aria-checked="true"]{background:var(--gold);transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
 .lv[aria-checked="true"] span{color:var(--ink)}
 .home-actions{display:flex;gap:12px;flex-wrap:wrap}
-.home-actions .btn{font-size:clamp(20px,2.2vw,28px);padding:12px 26px}
-.home-actions .btn.gold{flex:1;font-size:clamp(26px,3vw,38px)}
-.rules{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;font-size:clamp(14px,1.4vw,17px);font-weight:500;margin:0;padding:12px 16px;border:3px dashed var(--parch3);border-radius:14px}
+.home-actions .btn{font-size:clamp(16px,1.6vw,20px);padding:10px 16px;flex:1}
+.home-actions .btn.gold{flex:1 0 100%;font-size:clamp(26px,3vw,38px);padding:12px 26px}
+.rules-box{border:3px dashed var(--parch3);border-radius:14px;padding:8px 14px}
+.rules-box summary{cursor:pointer;font-size:clamp(15px,1.5vw,19px);color:var(--wood)}
+.rules{display:grid;grid-template-columns:1fr;gap:5px;font-size:clamp(14px,1.3vw,16px);font-weight:700;margin:8px 0 2px}
 .rules div{display:flex;justify-content:space-between;gap:10px}
 .rules b{font-family:var(--f-num);white-space:nowrap}
 .rules .plus{color:var(--mint);-webkit-text-stroke:.3px var(--ink)}
@@ -329,6 +352,12 @@ tbody tr.me{background:var(--gold)}
   .pad button small{display:none}
   .brand h1{font-size:clamp(22px,7vw,40px)}
 }
+@media (max-width:900px){
+  .home-wrap{grid-template-columns:1fr}
+  .home-hero{align-items:center;text-align:center}
+  .home-hero h2 br{display:none}
+  .galleon{width:clamp(120px,34vw,220px);margin-top:0}
+}
 @media (max-width:640px){
   .lv-cards,.rules,.breakdown{grid-template-columns:1fr}
 }
@@ -355,12 +384,47 @@ tbody tr.me{background:var(--gold)}
       <g stroke="#1A1830" stroke-width="5" stroke-linecap="round"><path d="M32 2v16M32 46v16M2 32h16M46 32h16M11 11l11 11M42 42l11 11M53 11 42 22M22 42 11 53"/></g>
       <g stroke="#FBEFCF" stroke-width="2" stroke-linecap="round"><path d="M32 3v14M32 47v14M3 32h14M47 32h14M12 12l10 10M42 42l10 10M52 12 42 22M22 42 12 52"/></g>
     </symbol>
+    <symbol id="cumulus" viewBox="0 0 200 90">
+      <path d="M22 78a22 22 0 0 1 6-43 30 30 0 0 1 54-14 26 26 0 0 1 44 6 24 24 0 0 1 40 14 20 20 0 0 1 8 37z" fill="currentColor"/>
+      <path d="M22 78a22 22 0 0 1-14-12c10 6 150 8 180 2a20 20 0 0 1-14 10z" fill="#BFE6F7"/>
+    </symbol>
+    <symbol id="galleon" viewBox="0 0 250 230">
+      <g stroke="#1A1830" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M92 152V22M152 152V40" fill="none"/>
+        <path d="M222 150l22-16" fill="none"/>
+        <path d="M92 26V8l26 8-26 8z" fill="#E23D36"/>
+        <path d="M68 28Q92 18 116 28l4 22Q92 40 64 50z" fill="#FBEFCF"/>
+        <path d="M56 58Q92 44 128 58l4 62Q92 106 52 120z" fill="#FBEFCF"/>
+        <path d="M54 82Q92 68 130 82l1 16Q92 84 53 98z" fill="#E23D36"/>
+        <path d="M134 66Q154 58 178 66l4 54Q154 110 130 120z" fill="#FBEFCF"/>
+        <path d="M132 86Q154 78 180 86l1 14Q154 92 131 100z" fill="#FFC93C"/>
+        <path d="M24 128h46v24H24z" fill="#7B4A25"/>
+        <path d="M18 150h204l-26 48Q120 214 44 198z" fill="#A2672F"/>
+        <path d="M26 168h188" fill="none" stroke-width="3"/>
+        <circle cx="78" cy="184" r="7" fill="#FFC93C" stroke-width="4"/>
+        <circle cx="120" cy="186" r="7" fill="#FFC93C" stroke-width="4"/>
+        <circle cx="162" cy="184" r="7" fill="#FFC93C" stroke-width="4"/>
+      </g>
+      <path d="M6 208q14-14 28 0t28 0 28 0 28 0 28 0 28 0 28 0 28 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+    </symbol>
   </defs>
 </svg>
 
-<!-- ===== 遊戲畫面 ===== -->
+<!-- ===== 場景：藍天、雲、海浪 ===== -->
 </head>
 <body>
+<div class="scene" aria-hidden="true">
+  <div class="sun"></div>
+  <svg class="cloud c1" viewBox="0 0 200 90"><use href="#cumulus"/></svg>
+  <svg class="cloud c2" viewBox="0 0 200 90"><use href="#cumulus"/></svg>
+  <svg class="cloud c3" viewBox="0 0 200 90"><use href="#cumulus"/></svg>
+  <svg class="cloud c4" viewBox="0 0 200 90"><use href="#cumulus"/></svg>
+  <div class="wave w1"></div>
+  <div class="wave w2"></div>
+  <div class="wave w3"></div>
+</div>
+
+<!-- ===== 遊戲畫面 ===== -->
 <div class="app" id="app">
   <header class="top">
     <div class="brand">
@@ -448,13 +512,13 @@ tbody tr.me{background:var(--gold)}
 
 <!-- ===== 首頁 ===== -->
 <div id="home" class="overlay sea">
+ <div class="home-wrap">
+  <div class="home-hero">
+    <h2 class="title-ink">下課<br>數獨挑戰</h2>
+    <p>解開藏寶圖，搶下排行榜第一名！</p>
+    <svg class="galleon" viewBox="0 0 250 230" aria-hidden="true"><use href="#galleon"/></svg>
+  </div>
   <div class="sheet home-card">
-    <div class="home-title">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><use href="#wheel"/></svg>
-      <h2 class="title-ink">下課數獨挑戰</h2>
-      <p>寫下船長名字、選好海域，解開藏寶圖，搶下排行榜第一名！</p>
-    </div>
-
     <div>
       <label class="field-label" for="nameInput">船長名字</label>
       <div class="name-row">
@@ -478,8 +542,9 @@ tbody tr.me{background:var(--gold)}
       <button type="button" class="btn" id="homeRank">排行榜</button>
     </div>
 
+    <details class="rules-box">
+    <summary>計分規則（點一下打開）</summary>
     <div class="rules">
-      <h3>計分規則</h3>
       <div><span>填對一格</span><b class="plus">+10</b></div>
       <div><span>連續答對（連擊）</span><b class="plus">每格再 +2，最多 +20</b></div>
       <div><span>完成一整列／一整行／一個宮格</span><b class="plus">+30</b></div>
@@ -487,7 +552,9 @@ tbody tr.me{background:var(--gold)}
       <div><span>觸礁（填錯）</span><b class="minus">第1次 −10、第2次 −20…最多 −50</b></div>
       <div><span>魔法道具</span><b class="minus">每用一次扣 15～40</b></div>
     </div>
+    </details>
   </div>
+ </div>
 </div>
 
 <!-- ===== 排行榜 ===== -->
@@ -1194,6 +1261,11 @@ document.addEventListener('keydown',e=>{
 const topBar=document.querySelector(".top");
 function syncHead(){ document.documentElement.style.setProperty("--head", topBar.offsetHeight+"px"); }
 syncHead(); if(window.ResizeObserver) new ResizeObserver(syncHead).observe(topBar); else addEventListener("resize",syncHead);
+
+/* 首頁顯示時把遊戲畫面藏起來，讓背景的海景露出來 */
+const homeEl=$('#home');
+function syncHome(){ document.body.classList.toggle('at-home', !homeEl.hidden); }
+new MutationObserver(syncHome).observe(homeEl,{attributes:true,attributeFilter:['hidden']}); syncHome();
 
 /* ---------- 啟動 ---------- */
 function start(data){
