@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具與排行榜，給高年級電子白板玩。">
+<meta name="description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆與排行榜，給高年級電子白板玩。">
 <meta name="theme-color" content="#0C3456">
 <meta property="og:type" content="website">
 <meta property="og:title" content="下課數獨挑戰">
-<meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具與排行榜，給高年級電子白板玩。">
+<meta property="og:description" content="航海動漫風的數獨遊戲：輸入船長名字、解題得分、魔法道具、手寫畫筆與排行榜，給高年級電子白板玩。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%e2%9a%93%3C/text%3E%3C/svg%3E">
 <title>下課數獨挑戰</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,7 +176,21 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--gold);outline-o
 .pad button.full{background:var(--parch2);color:var(--parch3);box-shadow:2px 2px 0 var(--ink)}
 .pad.noting button{background:var(--peer);border-style:dashed}
 
-.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* 手寫畫板：蓋在棋盤上，只有畫筆模式才接收觸控 */
+.ink{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);z-index:2;pointer-events:none;touch-action:none;border-radius:7px}
+.map.drawing .ink{pointer-events:auto;cursor:crosshair}
+.map.drawing{box-shadow:10px 10px 0 var(--ink),0 0 0 6px var(--magic)}
+.penbar{border:4px solid var(--ink);border-radius:16px;background:linear-gradient(160deg,#3B2A78,#241C4F);box-shadow:6px 6px 0 var(--ink);padding:8px 10px 10px}
+.pen-row{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.pen{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:3px solid var(--ink);border-radius:12px;background:var(--parch);
+  box-shadow:3px 3px 0 var(--ink);font-size:clamp(13px,1.2vw,16px);transition:transform .08s,box-shadow .08s}
+.pen i{width:clamp(22px,2.4vw,30px);height:clamp(22px,2.4vw,30px);border-radius:999px;border:3px solid var(--ink);display:block}
+.pen i.eraser{background:linear-gradient(135deg,var(--parch) 50%,#F4A6B0 50%);border-radius:6px;transform:rotate(-20deg)}
+.pen i.trash{border-radius:4px;background:repeating-linear-gradient(90deg,var(--parch2) 0 4px,var(--parch3) 4px 7px)}
+.pen[aria-pressed="true"]{background:var(--gold);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.pen:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
 .tools .btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 4px;font-size:clamp(15px,1.4vw,19px)}
 .tools svg{width:1.3em;height:1.3em;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .tools .btn[aria-pressed="true"]{background:var(--gold);color:var(--ink)}
@@ -364,6 +378,7 @@ tbody tr.me{background:var(--gold)}
   <main class="stage">
     <div class="map" id="map">
       <div id="board" class="board" aria-label="數獨棋盤"></div>
+      <canvas id="ink" class="ink" aria-label="手寫畫板"></canvas>
       <div id="cover" class="cover" hidden>
         <svg viewBox="0 0 64 64" style="color:var(--gold)"><use href="#anchor"/></svg>
         <b>拋錨休息中</b>
@@ -402,9 +417,22 @@ tbody tr.me{background:var(--gold)}
           <svg viewBox="0 0 24 24"><path d="m7 21-4-4a2 2 0 0 1 0-3L13 4a2 2 0 0 1 3 0l5 5a2 2 0 0 1 0 3l-9 9"/><path d="M7 21h14"/><path d="m9 10 6 6"/></svg>擦掉</button>
         <button type="button" class="btn" id="note" aria-pressed="false" title="筆記模式 (N)">
           <svg viewBox="0 0 24 24"><path d="M20 3C12 4 6 10 4 21"/><path d="M20 3c-1 6-5 10-11 11"/><path d="M8 17h5"/></svg>筆記</button>
+        <button type="button" class="btn" id="draw" aria-pressed="false" title="手寫畫筆 (D)">
+          <svg viewBox="0 0 24 24"><path d="M3 21c3 0 5-1 6-3"/><path d="M9 18 20 7a2.1 2.1 0 0 0-3-3L6 15z"/></svg>畫筆</button>
       </div>
 
-      <div class="items">
+      <div class="penbar" id="penbar" hidden>
+        <div class="items-head"><span>手寫畫筆：直接在棋盤上寫</span><span>再按「畫筆」回去填數字</span></div>
+        <div class="pen-row" id="penRow">
+          <button type="button" class="pen" data-color="--red" aria-pressed="true"><i style="background:var(--red)"></i>紅筆</button>
+          <button type="button" class="pen" data-color="--navy" aria-pressed="false"><i style="background:var(--navy)"></i>藍筆</button>
+          <button type="button" class="pen" data-color="--mint" aria-pressed="false"><i style="background:var(--mint)"></i>綠筆</button>
+          <button type="button" class="pen" data-tool="eraser" aria-pressed="false"><i class="eraser"></i>橡皮擦</button>
+          <button type="button" class="pen clear" id="inkClear"><i class="trash"></i>全部清掉</button>
+        </div>
+      </div>
+
+      <div class="items" id="itemBox">
         <div class="items-head"><span>魔法道具箱</span><span>用了會扣分喔</span></div>
         <div class="items-row" id="items"></div>
       </div>
@@ -595,7 +623,7 @@ function newState(level, player){
   return {level, player, sol, given:puz.map(v=>v>0), hinted:Array(N).fill(false), scored:Array(N).fill(false),
           cur:puz.slice(), notes:Array(N).fill(0), magicNotes:Array(N).fill(false), units:[],
           mistakes:0, elapsed:0, done:false, moves:0, paused:false,
-          score:0, combo:0, items, itemsUsed:0, shield:false,
+          score:0, combo:0, items, itemsUsed:0, shield:false, ink:[],
           tally:{cells:0, combo:0, units:0, penalty:0, magic:0, time:0, clear:0}};
 }
 
@@ -627,6 +655,8 @@ function build(){
   $('#items').innerHTML=ITEMS.map(it=>`<button type="button" class="item" data-item="${it.id}" title="${it.tip}">
     <span class="left num"></span><span class="ico" aria-hidden="true">${it.ico}</span><span class="nm">${it.name}</span><span class="cost">−${it.cost}分</span></button>`).join('');
   $('#captainTag').textContent=`船長 ${S.player}・${L().name}`;
+  if(!Array.isArray(S.ink)) S.ink=[];
+  requestAnimationFrame(sizeInk);
   render(); tickView();
 }
 function render(){
@@ -664,6 +694,10 @@ function render(){
     b.classList.toggle('on', it.id==='shield' && S.shield);
   });
   map.classList.toggle('shielded', S.shield);
+  map.classList.toggle('drawing', drawMode);
+  $('#draw').setAttribute('aria-pressed', drawMode);
+  $('#penbar').hidden=!drawMode; $('#itemBox').hidden=drawMode;
+  $('#undo').disabled = S.done || (drawMode ? !S.ink.length : !undoStack.length);
   const p=$('#pause');
   $('#cover').hidden=!S.paused;
   p.disabled=S.done;
@@ -789,6 +823,7 @@ function erase(){
 }
 function undo(){
   if(blocked()) return;
+  if(drawMode){ if(S.ink.length){ S.ink.pop(); redrawInk(); save(); } return; }
   const u=undoStack.pop(); if(!u) return;
   S.cur[u.i]=u.v; S.notes=u.notes; S.magicNotes=u.magicNotes; S.hinted[u.i]=u.hinted; sel=u.i; render(); save();
 }
@@ -929,7 +964,7 @@ function guarded(key, btn, msg, fn, force){
 }
 function disarm(){ armed=null; clearTimeout(armTimer); document.querySelectorAll('.armed').forEach(b=>b.classList.remove('armed')); }
 function startNew(level, player){
-  S=newState(level, player); sel=-1; noteMode=false; undoStack=[]; $('#win').hidden=true;
+  S=newState(level, player); sel=-1; noteMode=false; drawMode=false; undoStack=[]; $('#win').hidden=true;
   build(); save();
 }
 
@@ -968,13 +1003,82 @@ function confetti(){
 let toastT;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2400); }
 
+/* ---------- 手寫畫筆 ---------- */
+// 筆畫座標存成 0～1 的比例，換螢幕大小也能對回同一個格子
+let drawMode=false, penColor='--red', penTool='pen', stroke=null, erasing=false;
+const ink=$('#ink'), ictx=ink.getContext('2d');
+function tok(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function fitInk(){   // 畫布解析度跟著實際顯示大小走
+  const d=window.devicePixelRatio||1, W=Math.round(ink.clientWidth*d), H=Math.round(ink.clientHeight*d);
+  if(W && H && (ink.width!==W || ink.height!==H)){ ink.width=W; ink.height=H; ictx.setTransform(d,0,0,d,0,0); }
+}
+function sizeInk(){ redrawInk(); }
+function drawStroke(s, w){
+  ictx.strokeStyle=ictx.fillStyle=tok(s.c); ictx.lineWidth=s.w*w; ictx.lineCap='round'; ictx.lineJoin='round';
+  const p=s.pts;
+  if(p.length===1){ ictx.beginPath(); ictx.arc(p[0][0]*w,p[0][1]*w,s.w*w/2,0,Math.PI*2); ictx.fill(); return; }
+  ictx.beginPath(); ictx.moveTo(p[0][0]*w,p[0][1]*w);
+  for(let k=1;k<p.length-1;k++){ const mx=(p[k][0]+p[k+1][0])/2, my=(p[k][1]+p[k+1][1])/2; ictx.quadraticCurveTo(p[k][0]*w,p[k][1]*w,mx*w,my*w); }
+  const z=p[p.length-1]; ictx.lineTo(z[0]*w,z[1]*w); ictx.stroke();
+}
+function redrawInk(){
+  fitInk();
+  const w=ink.clientWidth; ictx.clearRect(0,0,w,ink.clientHeight);
+  if(!S || !S.ink) return;
+  for(const s of S.ink) drawStroke(s,w);
+  if(stroke) drawStroke(stroke,w);
+}
+function inkPt(e){ const r=ink.getBoundingClientRect(); return [+((e.clientX-r.left)/r.width).toFixed(4), +((e.clientY-r.top)/r.height).toFixed(4)]; }
+function eraseAt(p){
+  const before=S.ink.length;
+  S.ink=S.ink.filter(s=>!s.pts.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<.03));
+  if(S.ink.length!==before) redrawInk();
+}
+ink.addEventListener('pointerdown',e=>{
+  if(!drawMode || S.paused || S.done) return;
+  e.preventDefault(); try{ ink.setPointerCapture(e.pointerId); }catch(err){}
+  const p=inkPt(e);
+  if(penTool==='eraser'){ erasing=true; eraseAt(p); }
+  else { stroke={c:penColor, w:.01, pts:[p]}; redrawInk(); }
+});
+ink.addEventListener('pointermove',e=>{
+  if(erasing){ eraseAt(inkPt(e)); return; }
+  if(!stroke) return;
+  const p=inkPt(e), q=stroke.pts[stroke.pts.length-1];
+  if(Math.hypot(p[0]-q[0],p[1]-q[1])<.002) return;
+  stroke.pts.push(p); redrawInk();
+});
+function endInk(){
+  if(stroke){ S.ink.push(stroke); if(S.ink.length>400) S.ink.shift(); stroke=null; redrawInk(); save(); render(); }
+  if(erasing){ erasing=false; save(); render(); }
+}
+ink.addEventListener('pointerup',endInk);
+ink.addEventListener('pointercancel',endInk);
+if(window.ResizeObserver) new ResizeObserver(sizeInk).observe(ink); else addEventListener('resize',sizeInk);
+
+$('#draw').onclick=()=>{
+  if(blocked()) return;
+  drawMode=!drawMode; if(drawMode) noteMode=false;
+  toast(drawMode?'畫筆模式：用手指或觸控筆直接在棋盤上寫、圈、畫線':'回到填數字模式，畫的線會留著');
+  render();
+};
+$('#penRow').addEventListener('click',e=>{
+  const b=e.target.closest('.pen'); if(!b) return;
+  if(b.id==='inkClear'){
+    guarded('inkclear',b,'再按一次，清掉棋盤上所有畫線',()=>{ S.ink=[]; redrawInk(); save(); render(); toast('畫線都清掉了'); },true);
+    return;
+  }
+  document.querySelectorAll('#penRow .pen:not(.clear)').forEach(x=>x.setAttribute('aria-pressed', x===b));
+  if(b.dataset.tool==='eraser') penTool='eraser'; else { penTool='pen'; penColor=b.dataset.color; }
+});
+
 /* ---------- 事件 ---------- */
 board.addEventListener('click',e=>{ const c=e.target.closest('.cell'); if(c) select(+c.dataset.i); });
 pad.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) input(+b.dataset.v); });
 $('#items').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(b) useItem(b.dataset.item); });
 $('#erase').onclick=erase; $('#undo').onclick=undo;
 $('#pause').onclick=togglePause; $('#cover').onclick=togglePause;
-$('#note').onclick=()=>{ if(blocked()) return; noteMode=!noteMode; toast(noteMode?'筆記模式：把「可能的數字」小小記下來':'回到一般模式'); render(); };
+$('#note').onclick=()=>{ if(blocked()) return; noteMode=!noteMode; if(noteMode) drawMode=false; toast(noteMode?'筆記模式：把「可能的數字」小小記下來':'回到一般模式'); render(); };
 $('#newGame').onclick=e=>guarded('new',e.currentTarget,'正在航行喔！再按一次「新航線」確認換題',()=>startNew(S.level,S.player));
 $('#goHome').onclick=showHome;
 $('#openRank').onclick=()=>openRank();
@@ -1008,6 +1112,7 @@ document.addEventListener('keydown',e=>{
   if(/^[1-9]$/.test(e.key) && +e.key<=n){ input(+e.key); return; }
   if(e.key==='Backspace'||e.key==='Delete'||e.key==='0'){ erase(); return; }
   if(e.key.toLowerCase()==='n'){ $('#note').click(); return; }
+  if(e.key.toLowerCase()==='d'){ $('#draw').click(); return; }
   const mv={ArrowUp:-n,ArrowDown:n,ArrowLeft:-1,ArrowRight:1}[e.key];
   if(mv!==undefined){
     e.preventDefault();
